@@ -1,0 +1,36 @@
+# This workflow will build a .NET project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+
+name: .NET CI/CD
+
+on:
+  push:
+    branches: [ main ] # Executa quando há push na branch main
+  pull_request:
+    branches: [ main ] # Executa quando há um Pull Request para a main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest # O sistema operacional onde o pipeline será executado
+
+    steps:
+    - uses: actions/checkout@v4 # Clona o repositório
+      with:
+        fetch-depth: 0 # Necessário para alguns cenários de git
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4 # Configura o SDK .NET
+      with:
+        dotnet-version: '8.x' # Define a versão do .NET a ser usada (8.x para .NET 8)
+
+    - name: Restore dependencies
+      run: dotnet restore # Restaura os pacotes NuGet
+
+    - name: Build project
+      run: dotnet build --no-restore # Compila o projeto
+
+    - name: Run tests (optional, if you have a test project)
+      # Se você tiver um projeto de testes (ex: CentroTreinamento.Tests),
+      # descomente a linha abaixo e ajuste o caminho se necessário.
+      # run: dotnet test CentroTreinamento.Tests/CentroTreinamento.Tests.csproj --no-build --verbosity normal
+      run: echo "No test project found or configured. Skipping tests." # Mantém esta linha se não tiver testes ainda
