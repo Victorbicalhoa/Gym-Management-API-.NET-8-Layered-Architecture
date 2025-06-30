@@ -30,7 +30,7 @@ public class Administrador
         }
 
         // Exemplo de validação de status inicial. Em um sistema real, usaria um Enum.
-        if (status != "Ativo" && status != "Inativo") // Os estados para Administrador são apenas Ativo/Inativo
+        if (status != "Ativo" && status != "Inativo") // Os estados para Administrador são apenas Ativo/Inativo.
         {
             throw new ArgumentException($"Status '{status}' inválido para administrador na criação.");
         }
