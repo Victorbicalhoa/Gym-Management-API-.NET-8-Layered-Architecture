@@ -5,7 +5,7 @@ public class Relatorio
     // Atributos (Propriedades com get privados para controle)
     public int Id { get; private set; } // Identificador único do relatório
     public DateTime DataGeracao { get; private set; } // Data e hora em que o relatório foi gerado
-    public string Conteudo { get; private set; } // O conteúdo do relatório (caminho do arquivo, JSON serializado, etc.)
+    public string? Conteudo { get; private set; } // O conteúdo do relatório (caminho do arquivo, JSON serializado, etc.)
     public string Tipo { get; private set; } // Tipo do relatório (e.g., "Financeiro Total", "Progresso Aluno")
     public string PeriodoReferencia { get; private set; } // Período de dados que o relatório abrange (e.g., "2023-01", "Q1-2023")
     public int? GeradoPor { get; private set; } // ID opcional do Administrador que gerou o relatório (int? para nullable)
@@ -19,7 +19,7 @@ public class Relatorio
         string tipo,
         string periodoReferencia,
         int? geradoPor = null, // Parâmetro opcional e nullable
-        string conteudo = null, // Conteúdo pode ser null inicialmente se for gerado assincronamente
+        string? conteudo = null, // Conteúdo pode ser null inicialmente se for gerado assincronamente
         string statusInicial = "Gerado" // Status padrão ao criar, pode ser "Pendente" para geração assíncrona
     )
     {

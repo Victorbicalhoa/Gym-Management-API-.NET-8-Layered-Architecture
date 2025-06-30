@@ -1,91 +1,103 @@
-﻿using System; // Necessário para DateTime
+﻿// CentroTreinamento.Domain\Entities\Aluno.cs
+using System;
+using CentroTreinamento.Domain.Enums; // Adicione esta linha para usar o enum StatusAluno
 
 namespace CentroTreinamento.Domain.Entities
 {
-    // Define a classe Aluno como uma entidade de domínio
-    public class Aluno
+    public class Aluno // Considere herdar de uma BaseEntity com Guid Id
     {
-        // Atributos (Propriedades)
-        // 'Id' é a chave primária da entidade, padrão para ORMs como Entity Framework Core.
-        public int Id { get; private set; } // 'private set' garante que o Id só pode ser definido internamente, geralmente pelo ORM ou construtor.
-        public string Nome { get; private set; }
-        public string SenhaHash { get; private set; } // Alterado para SenhaHash para indicar que não é texto puro
-        public string Status { get; private set; } // Representa o estado do aluno (Pendente, Ativo, Inadimplente, Inativo)
-        public DateTime DataCadastro { get; private set; }
+        // Propriedades padrão para atores (Id, Nome, SenhaHash, Status)
+        public Guid Id { get; private set; } // <--- ALTERADO PARA GUID
+        public string? Nome { get; private set; }
+        public string? SenhaHash { get; private set; }
+        public StatusAluno Status { get; private set; } // <--- AGORA DO TIPO ENUM!
 
-        // Construtor: Usado para criar uma nova instância de Aluno
-        // O construtor garante que a entidade seja criada em um estado válido.
-        // Parâmetros mínimos para a criação.
-        public Aluno(string nome, string senhaHash)
+        // Outras propriedades específicas do Aluno
+        public string? Cpf { get; private set; } // CPF do aluno
+        public DateTime DataNascimento { get; private set; }
+        public string? Telefone { get; private set; }
+        // Adicione outras propriedades relevantes para Aluno, se houver (ex: DataMatricula, PlanoAtualId, etc.)
+
+        // Construtor vazio para o ORM (Entity Framework Core)
+        public Aluno() { }
+
+        // Construtor completo com validações (ajuste conforme suas necessidades)
+        public Aluno(Guid id, string nome, string senhaHash, StatusAluno status, string cpf, DateTime dataNascimento, string telefone)
         {
-            // Validações básicas no construtor
+            if (id == Guid.Empty)
+            {
+                throw new ArgumentException("ID do aluno não pode ser vazio.", nameof(id));
+            }
             if (string.IsNullOrWhiteSpace(nome))
-                throw new ArgumentException("O nome do aluno não pode ser vazio.");
+            {
+                throw new ArgumentException("Nome do aluno não pode ser vazio.", nameof(nome));
+            }
             if (string.IsNullOrWhiteSpace(senhaHash))
-                throw new ArgumentException("A senha do aluno não pode ser vazia.");
+            {
+                throw new ArgumentException("Senha hash do aluno não pode ser vazia.", nameof(senhaHash));
+            }
+            if (string.IsNullOrWhiteSpace(cpf))
+            {
+                throw new ArgumentException("CPF do aluno não pode ser vazio.", nameof(cpf));
+            }
+            if (dataNascimento == default(DateTime) || dataNascimento > DateTime.Now)
+            {
+                throw new ArgumentException("Data de nascimento inválida.", nameof(dataNascimento));
+            }
+            if (string.IsNullOrWhiteSpace(telefone))
+            {
+                throw new ArgumentException("Telefone do aluno não pode ser vazio.", nameof(telefone));
+            }
 
+            Id = id;
             Nome = nome;
             SenhaHash = senhaHash;
-            Status = "Pendente"; // Estado inicial padrão ao cadastrar
-            DataCadastro = DateTime.UtcNow; // Usa UTC para consistência de fuso horário
+            Status = status;
+            Cpf = cpf;
+            DataNascimento = dataNascimento;
+            Telefone = telefone;
         }
 
-        // Construtor privado sem parâmetros para uso de ORMs (como Entity Framework Core)
-        // ORMs precisam de um construtor sem parâmetros para instanciar objetos do banco de dados.
-        private Aluno() { }
-
-        // Métodos (Operações Internas da Entidade)
-        // Estes métodos representam a lógica de negócio intrínseca ao Aluno.
-        // Eles mudam o estado interno do Aluno de forma controlada.
+        // Métodos de domínio (comportamentos)
 
         /// <summary>
-        /// Obtém o status atual do aluno.
+        /// Atualiza o status do aluno.
         /// </summary>
-        /// <returns>O status do aluno (e.g., "Ativo", "Inadimplente").</returns>
-        public string GetStatus()
+        /// <param name="novoStatus">O novo status a ser definido.</param>
+        public void AtualizarStatus(StatusAluno novoStatus)
         {
-            return Status;
-        }
-
-        /// <summary>
-        /// Atualiza o status do aluno para um novo estado.
-        /// </summary>
-        /// <param name="novoStatus">O novo status a ser aplicado (e.g., "Ativo", "Inadimplente", "Inativo").</param>
-        public void AtualizarStatus(string novoStatus)
-        {
-            // Poderíamos adicionar validações aqui para garantir transições de estado válidas,
-            // por exemplo, um aluno "Inativo" não pode ir direto para "Ativo" sem "Pendente" ou algo assim.
-            // Para este exemplo, apenas atualiza.
-            if (string.IsNullOrWhiteSpace(novoStatus))
-                throw new ArgumentException("O novo status não pode ser vazio.");
-
-            // Exemplo de transição de estado mais robusta (opcional, dependendo da complexidade):
-            // switch (novoStatus)
-            // {
-            //     case "Ativo":
-            //         if (this.Status == "Pendente" || this.Status == "Inadimplente" || this.Status == "Inativo")
-            //             this.Status = novoStatus;
-            //         else throw new InvalidOperationException("Não é possível ativar o aluno a partir do status atual.");
-            //         break;
-            //     case "Inadimplente":
-            //         if (this.Status == "Ativo")
-            //             this.Status = novoStatus;
-            //         else throw new InvalidOperationException("Só é possível marcar como inadimplente a partir do status Ativo.");
-            //         break;
-            //     // ... e assim por diante
-            //     default:
-            //         throw new ArgumentException($"Status '{novoStatus}' inválido.");
-            // }
-
             this.Status = novoStatus;
         }
 
-        // Métodos como visualizarPlano(), agendarTreino(), consultarPagamentos(), visualizarProgresso()
-        // Não são métodos da ENTIDADE Aluno propriamente dita, mas sim funcionalidades que o Aluno (ator) realiza
-        // ATRAVÉS DO SISTEMA, que são orquestradas por SERVIÇOS.
-        // A entidade Aluno, como um objeto de domínio, não "agenda" ou "consulta".
-        // Ela é UM DADO que é usado por outros serviços para realizar essas ações.
-        // Ex: Um AgendamentoService receberia o Aluno e faria o agendamento para ele.
-        // Por isso, esses métodos NÃO estão incluídos aqui.
+        /// <summary>
+        /// Atualiza o nome do aluno.
+        /// </summary>
+        /// <param name="novoNome">O novo nome a ser definido.</param>
+        public void AtualizarNome(string novoNome)
+        {
+            if (string.IsNullOrWhiteSpace(novoNome))
+            {
+                throw new ArgumentException("Nome não pode ser vazio.", nameof(novoNome));
+            }
+            Nome = novoNome;
+        }
+
+        /// <summary>
+        /// Define a nova senha hash do aluno.
+        /// </summary>
+        /// <param name="novaSenhaHash">A nova senha hash.</param>
+        public void SetSenhaHash(string novaSenhaHash)
+        {
+            if (string.IsNullOrWhiteSpace(novaSenhaHash))
+            {
+                throw new ArgumentException("Nova senha hash não pode ser vazia.", nameof(novaSenhaHash));
+            }
+            this.SenhaHash = novaSenhaHash;
+        }
+
+        public override string ToString()
+        {
+            return $"Aluno{{ Id={Id}, Nome='{Nome}', Cpf='{Cpf}', Status='{Status}' }}";
+        }
     }
 }

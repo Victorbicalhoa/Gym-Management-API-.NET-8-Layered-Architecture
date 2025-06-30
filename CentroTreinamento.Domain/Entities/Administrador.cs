@@ -1,93 +1,48 @@
-﻿using System; // Para ArgumentException
+﻿// CentroTreinamento.Domain\Entities\Administrador.cs
+using System;
+using CentroTreinamento.Domain.Enums; // Adicione esta linha
 
-public class Administrador
+namespace CentroTreinamento.Domain.Entities
 {
-    // Atributos (Propriedades com get privados para controle)
-    public int Id { get; private set; } // Identificador único do administrador
-    public string Nome { get; private set; } // Nome completo do administrador
-    public string SenhaHash { get; private set; } // Hash da senha para segurança
-    public string Status { get; private set; } // Estado do administrador (e.g., "Ativo", "Inativo")
-
-    // Construtor
-    public Administrador(int id, string nome, string senhaHash, string status)
+    public class Administrador
     {
-        // Validações básicas no construtor para garantir que a entidade seja criada em um estado válido.
-        if (id <= 0)
+        public Guid Id { get; private set; } // <--- ALTERADO PARA GUID
+        public string? Nome { get; private set; }
+        public string? SenhaHash { get; private set; } // Adicionada propriedade SenhaHash
+        public StatusAdministrador Status { get; private set; } // <--- AGORA DO TIPO ENUM!
+        // Adicione outras propriedades específicas de Administrador, se houver.
+
+        // Construtor vazio para o ORM
+        public Administrador() { }
+
+        // Construtor completo
+        public Administrador(Guid id, string nome, string senhaHash, StatusAdministrador status)
         {
-            throw new ArgumentException("ID do administrador deve ser positivo.");
-        }
-        if (string.IsNullOrWhiteSpace(nome))
-        {
-            throw new ArgumentException("Nome do administrador não pode ser vazio.");
-        }
-        if (string.IsNullOrWhiteSpace(senhaHash))
-        {
-            throw new ArgumentException("Senha hash do administrador não pode ser vazia.");
-        }
-        if (string.IsNullOrWhiteSpace(status))
-        {
-            throw new ArgumentException("Status do administrador não pode ser vazio.");
+            if (id == Guid.Empty) throw new ArgumentException("ID do administrador não pode ser vazio.", nameof(id));
+            if (string.IsNullOrWhiteSpace(nome)) throw new ArgumentException("Nome do administrador não pode ser vazio.", nameof(nome));
+            if (string.IsNullOrWhiteSpace(senhaHash)) throw new ArgumentException("Senha hash do administrador não pode ser vazia.", nameof(senhaHash));
+
+            Id = id;
+            Nome = nome;
+            SenhaHash = senhaHash;
+            Status = status;
         }
 
-        // Exemplo de validação de status inicial. Em um sistema real, usaria um Enum.
-        if (status != "Ativo" && status != "Inativo") // Os estados para Administrador são apenas Ativo/Inativo.
+        // Métodos de domínio
+        public void AtualizarStatus(StatusAdministrador novoStatus)
         {
-            throw new ArgumentException($"Status '{status}' inválido para administrador na criação.");
+            this.Status = novoStatus;
         }
 
-        Id = id;
-        Nome = nome;
-        SenhaHash = senhaHash;
-        Status = status;
+        public void SetSenhaHash(string novaSenhaHash)
+        {
+            if (string.IsNullOrWhiteSpace(novaSenhaHash)) throw new ArgumentException("Nova senha hash não pode ser vazia.", nameof(novaSenhaHash));
+            this.SenhaHash = novaSenhaHash;
+        }
+
+        public override string ToString()
+        {
+            return $"Administrador{{ Id={Id}, Nome='{Nome}', Status='{Status}' }}";
+        }
     }
-
-    // Métodos Internos da Entidade (Comportamento de domínio)
-
-    /// <summary>
-    /// Retorna o status atual do administrador.
-    /// </summary>
-    /// <returns>O status do administrador (e.g., "Ativo", "Inativo").</returns>
-    public string GetStatus()
-    {
-        return this.Status;
-    }
-
-    /// <summary>
-    /// Atualiza o status do administrador.
-    /// Deve validar se o novo status é válido para o domínio.
-    /// </summary>
-    /// <param name="novoStatus">O novo status a ser definido (e.g., "Ativo", "Inativo").</param>
-    /// <exception cref="ArgumentException">Lançada se o novo status for inválido.</exception>
-    public void AtualizarStatus(string novoStatus)
-    {
-        if (string.IsNullOrWhiteSpace(novoStatus))
-        {
-            throw new ArgumentException("Novo status não pode ser vazio.");
-        }
-        // Exemplo de validação de estado. Em um sistema real, usaria um Enum ou uma lista de constantes.
-        if (novoStatus != "Ativo" && novoStatus != "Inativo")
-        {
-            throw new ArgumentException($"Status '{novoStatus}' inválido para administrador.");
-        }
-        this.Status = novoStatus;
-        // Lógica adicional pode ser adicionada aqui, como registrar um evento de domínio (Domain Event).
-    }
-
-    // Nota sobre 'SenhaHash': O setter é privado
-    // A SenhaHash deve ser definida apenas no construtor ou por um método específico
-    // que lide com a redefinição de senha de forma segura.
-
-    /// <summary>
-    /// Retorna uma representação em string do objeto Administrador.
-    /// </summary>
-    /// <returns>Uma string que representa o administrador.</returns>
-    public override string ToString()
-    {
-        return $"Administrador{{ Id={Id}, Nome='{Nome}', Status='{Status}' }}";
-    }
-
-    // Os "Serviços" listados (Gerenciamento de usuários, Auditoria financeira, Geração de relatórios, etc.)
-    // NÃO são métodos desta classe de entidade. Eles pertencem a classes de SERVIÇO (ex: UsuarioService,
-    // PagamentoService, RelatorioService, ConfigService) que interagem COM objetos Administrador
-    // (e outras entidades/repositórios) para orquestrar as operações de negócio.
 }
