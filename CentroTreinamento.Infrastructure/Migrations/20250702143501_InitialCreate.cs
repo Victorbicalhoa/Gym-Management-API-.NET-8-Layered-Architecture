@@ -17,8 +17,10 @@ namespace CentroTreinamento.Infrastructure.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Nome = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Cpf = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     SenhaHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Status = table.Column<int>(type: "int", nullable: false)
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    Role = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -47,12 +49,13 @@ namespace CentroTreinamento.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Nome = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SenhaHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    Cpf = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Nome = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    SenhaHash = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    Cpf = table.Column<string>(type: "nvarchar(11)", maxLength: 11, nullable: false),
                     DataNascimento = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Telefone = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Telefone = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Role = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -65,9 +68,11 @@ namespace CentroTreinamento.Infrastructure.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Nome = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Cpf = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     SenhaHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Status = table.Column<int>(type: "int", nullable: false),
-                    Cref = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Cref = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Role = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -119,6 +124,12 @@ namespace CentroTreinamento.Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_Recepcionistas", x => x.Id);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Alunos_Cpf",
+                table: "Alunos",
+                column: "Cpf",
+                unique: true);
         }
 
         /// <inheritdoc />

@@ -14,10 +14,12 @@ namespace CentroTreinamento.Application.Services
     public class AlunoAppService : IAlunoAppService
     {
         private readonly IAlunoRepository _alunoRepository;
+        private readonly IPasswordHasher _passwordHasher;
 
-        public AlunoAppService(IAlunoRepository alunoRepository)
+        public AlunoAppService(IAlunoRepository alunoRepository, IPasswordHasher passwordHasher)
         {
             _alunoRepository = alunoRepository;
+            _passwordHasher = passwordHasher;
         }
 
         public async Task<IEnumerable<AlunoViewModel>> GetAllAlunosAsync()
@@ -52,25 +54,31 @@ namespace CentroTreinamento.Application.Services
 
         public async Task<AlunoViewModel> CreateAlunoAsync(AlunoInputModel alunoInput)
         {
-            var senhaHash = $"HASH_{alunoInput.Senha}"; // Placeholder para a senha hash
+            // Use o _passwordHasher para gerar o hash da senha
+            var senhaHash = _passwordHasher.HashPassword(alunoInput.Senha!);
 
-            // Usando o operador null-forgiving (!) para suprimir os avisos de nulidade
+            // Normaliza o CPF: remove pontos e traços para armazenar apenas números
+            var cpfNormalizado = alunoInput.Cpf!.Replace(".", "").Replace("-", ""); // <--- ALTERAÇÃO AQUI
+
             var aluno = new Aluno(
                 Guid.NewGuid(),
-                alunoInput.Nome!, // O ! diz ao compilador que sabemos que não será nulo
+                alunoInput.Nome!,
                 senhaHash,
                 StatusAluno.Ativo,
-                alunoInput.Cpf!,   // O ! diz ao compilador que sabemos que não será nulo
+                cpfNormalizado, // <--- Use o CPF normalizado aqui
                 alunoInput.DataNascimento,
-                alunoInput.Telefone! // O ! diz ao compilador que sabemos que não será nulo
+                alunoInput.Telefone!,
+                UserRole.Aluno
             );
 
             await _alunoRepository.AddAsync(aluno);
+            await _alunoRepository.SaveChangesAsync();
+
             return new AlunoViewModel
             {
                 Id = aluno.Id,
                 Nome = aluno.Nome,
-                Cpf = aluno.Cpf,
+                Cpf = aluno.Cpf, // Aqui você pode decidir se retorna o CPF normalizado ou o original do input. Mantenha consistente com o que o frontend espera.
                 DataNascimento = aluno.DataNascimento,
                 Telefone = aluno.Telefone,
                 Status = aluno.Status
@@ -85,22 +93,27 @@ namespace CentroTreinamento.Application.Services
             var senhaHash = aluno.SenhaHash;
             if (!string.IsNullOrEmpty(alunoInput.Senha))
             {
-                senhaHash = $"HASH_{alunoInput.Senha}"; // Exemplo: Nova senha hash
+                // Use o _passwordHasher para gerar o hash da nova senha
+                senhaHash = _passwordHasher.HashPassword(alunoInput.Senha!);
             }
 
-            // Usando o operador null-forgiving (!) para suprimir os avisos de nulidade
+            // Normaliza o CPF para atualização
+            var cpfNormalizado = alunoInput.Cpf!.Replace(".", "").Replace("-", ""); // <--- ALTERAÇÃO AQUI
+
             var alunoAtualizado = new Aluno(
                 aluno.Id,
                 alunoInput.Nome!,
-                senhaHash!, // Assumimos que senhaHash não será nulo
+                senhaHash!,
                 aluno.Status,
-                alunoInput.Cpf!,
+                cpfNormalizado, // <--- Use o CPF normalizado aqui
                 alunoInput.DataNascimento,
-                alunoInput.Telefone!
+                alunoInput.Telefone!,
+                aluno.Role // Garanta que UserRole seja mantido ou definido corretamente
             );
 
             _alunoRepository.Update(alunoAtualizado);
             await _alunoRepository.SaveChangesAsync();
+
 
             return true;
         }
@@ -120,7 +133,7 @@ namespace CentroTreinamento.Application.Services
             var aluno = await _alunoRepository.GetByIdAsync(id);
             if (aluno == null) return false;
 
-            aluno.AtualizarStatus(novoStatus); // Usa o método de domínio da entidade
+            aluno.AtualizarStatus(novoStatus);
             _alunoRepository.Update(aluno);
             await _alunoRepository.SaveChangesAsync();
             return true;

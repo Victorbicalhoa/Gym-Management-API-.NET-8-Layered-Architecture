@@ -1,5 +1,5 @@
-﻿using CentroTreinamento.Domain.Entities; // Para acessar suas entidades de domínio
-using Microsoft.EntityFrameworkCore; // Pacote do EF Core
+﻿using CentroTreinamento.Domain.Entities; 
+using Microsoft.EntityFrameworkCore;
 
 namespace CentroTreinamento.Infrastructure.Data
 {
@@ -20,21 +20,43 @@ namespace CentroTreinamento.Infrastructure.Data
         public DbSet<Instrutor> Instrutores { get; set; }
         public DbSet<Recepcionista> Recepcionistas { get; set; }
 
-        // Opcional: Configurações de mapeamento avançadas
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            // Exemplo: Se suas entidades não herdam de BaseEntity com Id,
-            // ou se o Id não é do tipo Guid por padrão, você pode mapear explicitamente:
-            // modelBuilder.Entity<Aluno>().HasKey(a => a.Id);
+            // Mapeamento para a entidade Aluno
+            modelBuilder.Entity<Aluno>(entity =>
+            {
+                entity.HasKey(e => e.Id); // Garante que Id é a chave primária
+                entity.Property(e => e.Nome).IsRequired().HasMaxLength(255); // Exemplo de configuração de propriedade
+                entity.Property(e => e.Cpf).IsRequired().HasMaxLength(11); // CPF deve ter 11 dígitos, sem pontos/traços
+                entity.HasIndex(e => e.Cpf).IsUnique(); // Garante que o CPF é único no banco de dados e cria um índice para busca rápida
 
-            // Configurações para chaves estrangeiras, índices únicos, etc.
-            // Ex: Garantir que o CPF do Aluno seja único
-            // modelBuilder.Entity<Aluno>().HasIndex(a => a.Cpf).IsUnique();
+                // Adicione outras configurações de propriedade ou relacionamentos aqui
+                // Exemplo para Enum StatusAluno
+                entity.Property(e => e.Status)
+                      .HasConversion<string>() // Armazena o enum como string no DB
+                      .HasMaxLength(20); // Define o tamanho máximo da string
 
-            // Para suas entidades, garanta que o EF Core saiba a chave primária
-            // Se você tem uma 'BaseEntity' com 'Id', o EF Core geralmente detecta automaticamente.
+                // Exemplo para Enum UserRole
+                entity.Property(e => e.Role)
+                      .HasConversion<string>()
+                      .HasMaxLength(20);
+            });
+
+            // Repita para outras entidades se necessário, como Agendamento, Administrador, etc.
+            modelBuilder.Entity<Agendamento>().HasKey(a => a.Id);
+            modelBuilder.Entity<PlanoDeTreino>().HasKey(p => p.Id);
+            modelBuilder.Entity<Pagamento>().HasKey(p => p.Id);
+            modelBuilder.Entity<Administrador>().HasKey(a => a.Id);
+            modelBuilder.Entity<Instrutor>().HasKey(i => i.Id);
+            modelBuilder.Entity<Recepcionista>().HasKey(r => r.Id);
+
+            // Configuração para a propriedade Valor da entidade Pagamento
+            modelBuilder.Entity<Pagamento>()
+                .Property(p => p.Valor)
+                .HasColumnType("decimal(18, 2)");
         }
     }
 }

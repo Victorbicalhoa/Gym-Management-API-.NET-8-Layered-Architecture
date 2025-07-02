@@ -1,24 +1,25 @@
-﻿// CentroTreinamento.Domain\Entities\Instrutor.cs
-using System;
-using CentroTreinamento.Domain.Enums; // Importa o namespace do enum
+﻿using System;
+using CentroTreinamento.Domain.Enums; 
 
 namespace CentroTreinamento.Domain.Entities
 {
-    public class Instrutor // Considere herdar de uma BaseEntity com Guid Id
+    public class Instrutor 
     {
-        // Atributos (Propriedades com get privados para controle)
-        public Guid Id { get; private set; } // Identificador único do instrutor, alterado para Guid
-        public string? Nome { get; private set; } // Nome completo do instrutor
-        public string? SenhaHash { get; private set; } // Hash da senha para segurança
-        public StatusInstrutor Status { get; private set; } // <--- AGORA DO TIPO ENUM!
-        public string? Cref { get; private set; } // Número de registro profissional (CREF)
+        // Propriedades padrão para atores
+        public Guid Id { get; private set; } 
+        public string? Nome { get; private set; }
+        public string?Cpf { get; private set; }
+        public string? SenhaHash { get; private set; } 
+        public StatusInstrutor Status { get; private set; }
+        public string? Cref { get; private set; } 
+        public UserRole Role { get; private set; } 
 
         // Construtor vazio para o ORM (Entity Framework Core)
         // É essencial que ele seja público ou 'protected' se a classe for abstrata.
         public Instrutor() { }
 
         // Construtor completo com validações
-        public Instrutor(Guid id, string nome, string senhaHash, StatusInstrutor status, string cref)
+        public Instrutor(Guid id, string nome, string senhaHash, StatusInstrutor status, string cref, string? cpf, UserRole role)
         {
             // Validações no construtor para garantir que a entidade seja criada em um estado válido.
             if (id == Guid.Empty)
@@ -39,12 +40,26 @@ namespace CentroTreinamento.Domain.Entities
             {
                 throw new ArgumentException("CREF do instrutor não pode ser vazio.", nameof(cref));
             }
+            if (cpf != null && string.IsNullOrWhiteSpace(cpf))
+            {
+                throw new ArgumentException("CPF do instrutor não pode ser vazio.", nameof(cpf));
+            }
+            if (!Enum.IsDefined(typeof(StatusInstrutor), status))
+            {
+                throw new ArgumentException("Status inválido.", nameof(status));
+            }
+            if (!Enum.IsDefined(typeof(UserRole), role))
+            {
+                throw new ArgumentException("Role inválida.", nameof(role));
+            }
 
             Id = id;
             Nome = nome;
             SenhaHash = senhaHash;
             Status = status;
             Cref = cref;
+            Cpf = cpf;
+            Role = role;
         }
 
         // --- Métodos Internos da Entidade (Comportamento de domínio) ---
