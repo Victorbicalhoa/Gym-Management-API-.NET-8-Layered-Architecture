@@ -45,7 +45,7 @@ namespace CentroTreinamento.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Administradores");
+                    b.ToTable("Administradores", (string)null);
                 });
 
             modelBuilder.Entity("CentroTreinamento.Domain.Entities.Agendamento", b =>
@@ -74,7 +74,7 @@ namespace CentroTreinamento.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Agendamentos");
+                    b.ToTable("Agendamentos", (string)null);
                 });
 
             modelBuilder.Entity("CentroTreinamento.Domain.Entities.Aluno", b =>
@@ -119,7 +119,7 @@ namespace CentroTreinamento.Infrastructure.Migrations
                     b.HasIndex("Cpf")
                         .IsUnique();
 
-                    b.ToTable("Alunos");
+                    b.ToTable("Alunos", (string)null);
                 });
 
             modelBuilder.Entity("CentroTreinamento.Domain.Entities.Instrutor", b =>
@@ -148,7 +148,7 @@ namespace CentroTreinamento.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Instrutores");
+                    b.ToTable("Instrutores", (string)null);
                 });
 
             modelBuilder.Entity("CentroTreinamento.Domain.Entities.Pagamento", b =>
@@ -171,7 +171,7 @@ namespace CentroTreinamento.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Pagamentos");
+                    b.ToTable("Pagamentos", (string)null);
                 });
 
             modelBuilder.Entity("CentroTreinamento.Domain.Entities.PlanoDeTreino", b =>
@@ -200,7 +200,7 @@ namespace CentroTreinamento.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("PlanosDeTreino");
+                    b.ToTable("PlanosDeTreino", (string)null);
                 });
 
             modelBuilder.Entity("CentroTreinamento.Domain.Entities.Recepcionista", b =>
@@ -220,7 +220,7 @@ namespace CentroTreinamento.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Recepcionistas");
+                    b.ToTable("Recepcionistas", (string)null);
                 });
 #pragma warning restore 612, 618
         }

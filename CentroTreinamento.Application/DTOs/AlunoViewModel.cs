@@ -11,5 +11,6 @@ namespace CentroTreinamento.Application.DTOs
         public DateTime DataNascimento { get; set; }
         public string? Telefone { get; set; }
         public StatusAluno Status { get; set; }
+        public UserRole Role { get; set; }
     }
 }

@@ -26,17 +26,30 @@ namespace CentroTreinamento.Domain.Entities
             if (!Enum.IsDefined(typeof(UserRole), role)) throw new ArgumentException("Role inválida.", nameof(role));
 
             Id = id;
+            Cpf = cpf;
             Nome = nome;
             SenhaHash = senhaHash;
             Status = status;
             Role = role;
-            Cpf = cpf;
+            
         }
 
         // Métodos de domínio
         public void AtualizarStatus(StatusAdministrador novoStatus)
         {
             this.Status = novoStatus;
+        }
+
+        // NOVO MÉTODO para atualizar informações (exceto ID)
+        public void AtualizarDados(string novoNome, string novoCpf, string? novaSenhaHash = null)
+        {
+            // Validações podem ir aqui
+            Nome = novoNome;
+            Cpf = novoCpf;
+            if (!string.IsNullOrEmpty(novaSenhaHash))
+            {
+                SenhaHash = novaSenhaHash;
+            }
         }
 
         public void SetSenhaHash(string novaSenhaHash)

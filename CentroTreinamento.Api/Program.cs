@@ -38,13 +38,14 @@ builder.Services.AddScoped<CentroTreinamento.Application.Interfaces.IPasswordHas
 builder.Services.AddScoped<CentroTreinamento.Application.Interfaces.IAuthAppService, CentroTreinamento.Application.Services.AuthAppService>();
 
 // Registro dos Serviços de Aplicação
+builder.Services.AddScoped<IAdministradorAppService, AdministradorAppService>();
 builder.Services.AddScoped<IAlunoAppService, AlunoAppService>();
 
 // Registro do serviço de Hashing de Senhas
 builder.Services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
 
 // Registro do futuro serviço de autenticação
-builder.Services.AddScoped<IAuthAppService, AuthAppService>(); // Isso será implementado em breve!
+builder.Services.AddScoped<IAuthAppService, AuthAppService>(); 
 
 // Configuração JWT
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
