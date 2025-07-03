@@ -29,15 +29,20 @@ namespace CentroTreinamento.Infrastructure.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Cpf")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(11)
+                        .HasColumnType("nvarchar(11)");
 
                     b.Property<string>("Nome")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<int>("Role")
                         .HasColumnType("int");
 
                     b.Property<string>("SenhaHash")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Status")
@@ -45,7 +50,10 @@ namespace CentroTreinamento.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Administradores", (string)null);
+                    b.HasIndex("Cpf")
+                        .IsUnique();
+
+                    b.ToTable("Administradores");
                 });
 
             modelBuilder.Entity("CentroTreinamento.Domain.Entities.Agendamento", b =>
@@ -74,7 +82,7 @@ namespace CentroTreinamento.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Agendamentos", (string)null);
+                    b.ToTable("Agendamentos");
                 });
 
             modelBuilder.Entity("CentroTreinamento.Domain.Entities.Aluno", b =>
@@ -119,7 +127,7 @@ namespace CentroTreinamento.Infrastructure.Migrations
                     b.HasIndex("Cpf")
                         .IsUnique();
 
-                    b.ToTable("Alunos", (string)null);
+                    b.ToTable("Alunos");
                 });
 
             modelBuilder.Entity("CentroTreinamento.Domain.Entities.Instrutor", b =>
@@ -129,18 +137,24 @@ namespace CentroTreinamento.Infrastructure.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Cpf")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(11)
+                        .HasColumnType("nvarchar(11)");
 
                     b.Property<string>("Cref")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("Nome")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<int>("Role")
                         .HasColumnType("int");
 
                     b.Property<string>("SenhaHash")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Status")
@@ -148,7 +162,14 @@ namespace CentroTreinamento.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Instrutores", (string)null);
+                    b.HasIndex("Cpf")
+                        .IsUnique()
+                        .HasFilter("[Cpf] IS NOT NULL");
+
+                    b.HasIndex("Cref")
+                        .IsUnique();
+
+                    b.ToTable("Instrutores");
                 });
 
             modelBuilder.Entity("CentroTreinamento.Domain.Entities.Pagamento", b =>
@@ -171,7 +192,7 @@ namespace CentroTreinamento.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Pagamentos", (string)null);
+                    b.ToTable("Pagamentos");
                 });
 
             modelBuilder.Entity("CentroTreinamento.Domain.Entities.PlanoDeTreino", b =>
@@ -200,7 +221,7 @@ namespace CentroTreinamento.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("PlanosDeTreino", (string)null);
+                    b.ToTable("PlanosDeTreino");
                 });
 
             modelBuilder.Entity("CentroTreinamento.Domain.Entities.Recepcionista", b =>
@@ -220,7 +241,7 @@ namespace CentroTreinamento.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Recepcionistas", (string)null);
+                    b.ToTable("Recepcionistas");
                 });
 #pragma warning restore 612, 618
         }

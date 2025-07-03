@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations; // Para validações
 using CentroTreinamento.Domain.Enums; // Se você quiser definir o Status inicial no input
 
-namespace CentroTreinamento.Application.DTOs
+namespace CentroTreinamento.Application.DTOs.Administrador
 {
     public class AdministradorInputModel
     {

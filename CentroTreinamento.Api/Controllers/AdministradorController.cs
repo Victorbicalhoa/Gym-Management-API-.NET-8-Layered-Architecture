@@ -1,6 +1,6 @@
 ﻿// CentroTreinamento.Api/Controllers/AdministradorController.cs
-using CentroTreinamento.Application.DTOs;
-using CentroTreinamento.Application.Interfaces;
+using CentroTreinamento.Application.DTOs.Administrador;
+using CentroTreinamento.Application.Interfaces.Services;
 using CentroTreinamento.Domain.Enums; // Para StatusAdministrador
 using Microsoft.AspNetCore.Authorization; // Para o atributo [Authorize]
 using Microsoft.AspNetCore.Mvc;

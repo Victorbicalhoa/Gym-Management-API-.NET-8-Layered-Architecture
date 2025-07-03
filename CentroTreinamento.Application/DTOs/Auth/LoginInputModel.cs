@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace CentroTreinamento.Application.DTOs
+namespace CentroTreinamento.Application.DTOs.Auth
 {
     public class LoginInputModel
     {

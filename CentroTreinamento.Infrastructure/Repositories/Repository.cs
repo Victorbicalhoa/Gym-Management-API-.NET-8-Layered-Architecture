@@ -40,6 +40,21 @@ namespace CentroTreinamento.Infrastructure.Repositories
         public async Task AddAsync(TEntity entity)
         {
             await _dbSet.AddAsync(entity); // Adiciona a entidade ao contexto, ela será salva depois
+            //await _context.SaveChangesAsync(); // Salva as mudanças imediatamente (opcional, dependendo do padrão de uso)
+        }
+
+        // IMPLEMENTAÇÃO DE UpdateAsync
+        public void UpdateAsync(TEntity entity)
+        {
+            _dbSet.Update(entity); // Marca a entidade como modificada
+            //await _context.SaveChangesAsync(); // Salva as mudanças
+        }
+
+        // IMPLEMENTAÇÃO DE DeleteAsync
+        public void DeleteAsync(TEntity entity)
+        {
+            _dbSet.Remove(entity); // Marca a entidade para remoção
+            //await _context.SaveChangesAsync(); // Salva as mudanças
         }
 
         public void Update(TEntity entity)

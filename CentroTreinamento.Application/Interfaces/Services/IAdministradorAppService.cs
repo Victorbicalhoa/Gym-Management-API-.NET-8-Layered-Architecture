@@ -1,11 +1,11 @@
 ﻿// CentroTreinamento.Application/Interfaces/IAdministradorAppService.cs
-using CentroTreinamento.Application.DTOs;
+using CentroTreinamento.Application.DTOs.Administrador;
 using CentroTreinamento.Domain.Enums; // Para StatusAdministrador
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace CentroTreinamento.Application.Interfaces
+namespace CentroTreinamento.Application.Interfaces.Services
 {
     public interface IAdministradorAppService
     {

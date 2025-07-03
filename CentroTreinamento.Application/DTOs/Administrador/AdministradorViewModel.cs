@@ -2,7 +2,7 @@
 using CentroTreinamento.Domain.Enums; // Para StatusAdministrador e UserRole
 using System;
 
-namespace CentroTreinamento.Application.DTOs
+namespace CentroTreinamento.Application.DTOs.Administrador
 {
     public class AdministradorViewModel
     {

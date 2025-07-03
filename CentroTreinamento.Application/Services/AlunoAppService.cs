@@ -1,5 +1,4 @@
 ﻿// CentroTreinamento.Application/Services/AlunoAppService.cs
-using CentroTreinamento.Application.DTOs;
 using CentroTreinamento.Application.Interfaces;
 using CentroTreinamento.Domain.Entities;
 using CentroTreinamento.Domain.Repositories;
@@ -8,6 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CentroTreinamento.Application.DTOs.Aluno;
+using CentroTreinamento.Application.Interfaces.Services;
 
 namespace CentroTreinamento.Application.Services
 {

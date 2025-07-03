@@ -1,10 +1,10 @@
-﻿using CentroTreinamento.Application.DTOs;
+﻿using CentroTreinamento.Application.DTOs.Aluno;
 using CentroTreinamento.Domain.Enums; // Para StatusAluno
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace CentroTreinamento.Application.Interfaces
+namespace CentroTreinamento.Application.Interfaces.Services
 {
     public interface IAlunoAppService
     {

@@ -1,5 +1,5 @@
-﻿using CentroTreinamento.Application.DTOs;
-using CentroTreinamento.Application.Interfaces;
+﻿using CentroTreinamento.Application.DTOs.Aluno;
+using CentroTreinamento.Application.Interfaces.Services;
 using CentroTreinamento.Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc; // ESSENCIAL: Garante que o controlador funcione como uma API ASP.NET Core

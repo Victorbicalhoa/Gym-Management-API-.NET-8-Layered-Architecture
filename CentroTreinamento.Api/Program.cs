@@ -1,4 +1,5 @@
 using CentroTreinamento.Application.Interfaces;
+using CentroTreinamento.Application.Interfaces.Services;
 using CentroTreinamento.Application.Services;
 using CentroTreinamento.Domain.Entities;            
 using CentroTreinamento.Domain.Repositories;
@@ -7,7 +8,8 @@ using CentroTreinamento.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer; 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;               
-using System.Text;                                 
+using System.Text;
+using System.Text.Json.Serialization;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -28,18 +30,10 @@ builder.Services.AddScoped<IPlanoDeTreinoRepository, PlanoDeTreinoRepository>();
 builder.Services.AddScoped<IRecepcionistaRepository, RecepcionistaRepository>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
-// Registrar o AlunoRepository
-builder.Services.AddScoped<CentroTreinamento.Domain.Repositories.IAlunoRepository, CentroTreinamento.Infrastructure.Repositories.AlunoRepository>();
-
-// Registrar o PasswordHasher
-builder.Services.AddScoped<CentroTreinamento.Application.Interfaces.IPasswordHasher, CentroTreinamento.Application.Services.BCryptPasswordHasher>();
-
-// Registrar o AuthAppService
-builder.Services.AddScoped<CentroTreinamento.Application.Interfaces.IAuthAppService, CentroTreinamento.Application.Services.AuthAppService>();
-
 // Registro dos Serviços de Aplicação
 builder.Services.AddScoped<IAdministradorAppService, AdministradorAppService>();
 builder.Services.AddScoped<IAlunoAppService, AlunoAppService>();
+builder.Services.AddScoped<IInstrutorAppService, InstrutorAppService>();
 
 // Registro do serviço de Hashing de Senhas
 builder.Services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
@@ -71,6 +65,14 @@ builder.Services.AddAuthentication(options =>
         ValidateLifetime = true, // Valida a data de expiração do token
         ClockSkew = TimeSpan.Zero // Não permite tolerância para o tempo de expiração
     };
+});
+
+// Configuração do JSON para serialização de enums como strings
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    // Se estiver usando Newtonsoft.Json:
+    // options.JsonSerializerOptions.SerializerSettings.Converters.Add(new StringEnumConverter());
 });
 
 builder.Services.AddAuthorization(); // Habilita o uso de atributos [Authorize] e [AllowAnonymous]

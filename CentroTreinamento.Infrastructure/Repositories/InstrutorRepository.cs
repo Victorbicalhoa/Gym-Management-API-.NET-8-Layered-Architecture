@@ -16,21 +16,19 @@ namespace CentroTreinamento.Infrastructure.Repositories
 
         public async Task<IEnumerable<Instrutor>> GetInstrutoresDisponiveisAsync(DateTime data, TimeSpan horario)
         {
-            // Esta é uma lógica complexa que pode precisar de mais detalhes sobre como você modelou a disponibilidade
-            // Por enquanto, é um exemplo simplificado.
-            // Poderia envolver:
-            // 1. Join com a tabela de Agendamentos para ver quais horários estão ocupados.
-            // 2. Consulta a uma propriedade de 'HorariosTrabalho' no Instrutor.
-
-            // Exemplo BEM simplificado:
             return await _dbSet
-                         .Where(i => i.Status == Domain.Enums.StatusInstrutor.Ativo) // Assumindo StatusInstrutor enum e Status propriedade
+                         .Where(i => i.Status == Domain.Enums.StatusInstrutor.Ativo)
                          .ToListAsync();
         }
 
         public async Task<Instrutor?> GetByCrefAsync(string cref)
         {
-            return await _dbSet.FirstOrDefaultAsync(i => i.Cref == cref); // Assumindo propriedade Cref
+            return await _dbSet.FirstOrDefaultAsync(i => i.Cref == cref);
+        }
+
+        public async Task<Instrutor?> GetByCpfAsync(string cpf)
+        {
+            return await _dbSet.FirstOrDefaultAsync(i => i.Cpf == cpf);
         }
     }
 }

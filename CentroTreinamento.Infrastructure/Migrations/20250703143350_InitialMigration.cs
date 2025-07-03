@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace CentroTreinamento.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitialMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -16,9 +16,9 @@ namespace CentroTreinamento.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Nome = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Cpf = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SenhaHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Nome = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Cpf = table.Column<string>(type: "nvarchar(11)", maxLength: 11, nullable: false),
+                    SenhaHash = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
                     Role = table.Column<int>(type: "int", nullable: false)
                 },
@@ -67,11 +67,11 @@ namespace CentroTreinamento.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Nome = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Cpf = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SenhaHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Nome = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Cpf = table.Column<string>(type: "nvarchar(11)", maxLength: 11, nullable: true),
+                    SenhaHash = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
-                    Cref = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Cref = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     Role = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -126,9 +126,28 @@ namespace CentroTreinamento.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Administradores_Cpf",
+                table: "Administradores",
+                column: "Cpf",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Alunos_Cpf",
                 table: "Alunos",
                 column: "Cpf",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Instrutores_Cpf",
+                table: "Instrutores",
+                column: "Cpf",
+                unique: true,
+                filter: "[Cpf] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Instrutores_Cref",
+                table: "Instrutores",
+                column: "Cref",
                 unique: true);
         }
 

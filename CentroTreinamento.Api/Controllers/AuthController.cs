@@ -1,7 +1,6 @@
 ﻿// CentroTreinamento.Api/Controllers/AuthController.cs
-using CentroTreinamento.Application.DTOs;
-using CentroTreinamento.Application.Interfaces;
-// REMOVA: using CentroTreinamento.Application.Services; // Este using não é mais necessário aqui
+using CentroTreinamento.Application.DTOs.Auth;
+using CentroTreinamento.Application.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -15,13 +14,13 @@ using System.Threading.Tasks;
 namespace CentroTreinamento.Api.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/[controller]")] // Isso significa que a rota base é "api/Auth"
     public class AuthController : ControllerBase
     {
-        private readonly IAuthAppService _authAppService; // Único AppService para login
+        private readonly IAuthAppService _authAppService;
         private readonly IConfiguration _configuration;
 
-        public AuthController(IAuthAppService authAppService, IConfiguration configuration) // Apenas um AppService injetado
+        public AuthController(IAuthAppService authAppService, IConfiguration configuration)
         {
             _authAppService = authAppService;
             _configuration = configuration;
@@ -36,7 +35,6 @@ namespace CentroTreinamento.Api.Controllers
                 return BadRequest(ModelState);
             }
 
-            // Chama o método do AuthAppService que agora aceita LoginInputModel
             var aluno = await _authAppService.LoginAlunoAsync(loginModel);
 
             if (aluno == null)
@@ -66,7 +64,6 @@ namespace CentroTreinamento.Api.Controllers
                 return BadRequest(ModelState);
             }
 
-            // Chama o método do AuthAppService que agora aceita LoginInputModel
             var administrador = await _authAppService.LoginAdministradorAsync(loginModel);
 
             if (administrador == null)
@@ -86,6 +83,40 @@ namespace CentroTreinamento.Api.Controllers
                 Role = administrador.Role.ToString()
             });
         }
+
+        // NOVO ENDPOINT PARA LOGIN DE INSTRUTOR
+        [HttpPost("login/instrutor")] // A rota completa será "api/Auth/login/instrutor"
+        [AllowAnonymous]
+        public async Task<ActionResult<AuthResponseViewModel>> LoginInstrutor([FromBody] LoginInputModel loginModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            // Chama o método no seu AuthAppService para autenticar o instrutor
+            // Você precisará ter um método como LoginInstrutorAsync no seu IAuthAppService e AuthAppService.cs
+            var instrutor = await _authAppService.LoginInstrutorAsync(loginModel);
+
+            if (instrutor == null)
+            {
+                return Unauthorized(new { message = "CPF ou senha inválidos." });
+            }
+
+            // Gera o token JWT para o instrutor
+            var tokenString = GenerateJwtToken(instrutor.Id.ToString(), instrutor.Cpf!, instrutor.Nome!, instrutor.Role.ToString());
+
+            return Ok(new AuthResponseViewModel
+            {
+                AccessToken = tokenString,
+                TokenType = "Bearer",
+                ExpiresIn = (int)TimeSpan.FromMinutes(double.Parse(_configuration["JwtSettings:ExpirationInMinutes"]!)).TotalSeconds,
+                Cpf = instrutor.Cpf!,
+                Nome = instrutor.Nome!,
+                Role = instrutor.Role.ToString()
+            });
+        }
+
 
         // Mantenha APENAS ESTA VERSÃO do GenerateJwtToken
         private string GenerateJwtToken(string userId, string userCpf, string userName, string userRole)

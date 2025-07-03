@@ -1,7 +1,7 @@
 ﻿using System;
 using CentroTreinamento.Domain.Enums;
 
-namespace CentroTreinamento.Application.DTOs
+namespace CentroTreinamento.Application.DTOs.Aluno
 {
     public class AlunoViewModel
     {

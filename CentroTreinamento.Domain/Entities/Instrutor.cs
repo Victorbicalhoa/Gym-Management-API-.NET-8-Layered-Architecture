@@ -3,25 +3,24 @@ using CentroTreinamento.Domain.Enums;
 
 namespace CentroTreinamento.Domain.Entities
 {
-    public class Instrutor 
+    public class Instrutor
     {
         // Propriedades padrão para atores
         public Guid Id { get; private set; } 
         public string? Nome { get; private set; }
-        public string?Cpf { get; private set; }
-        public string? SenhaHash { get; private set; } 
+        public string? Cpf { get; private set; }
+        public string? SenhaHash { get; private set; }
         public StatusInstrutor Status { get; private set; }
-        public string? Cref { get; private set; } 
-        public UserRole Role { get; private set; } 
+        public string? Cref { get; private set; } // CREF é uma particularidade do Instrutor
+        public UserRole Role { get; private set; }
 
         // Construtor vazio para o ORM (Entity Framework Core)
-        // É essencial que ele seja público ou 'protected' se a classe for abstrata.
         public Instrutor() { }
 
         // Construtor completo com validações
-        public Instrutor(Guid id, string nome, string senhaHash, StatusInstrutor status, string cref, string? cpf, UserRole role)
+        public Instrutor(Guid id, string nome, string? cpf, string senhaHash, StatusInstrutor status, string cref, UserRole role)
         {
-            // Validações no construtor para garantir que a entidade seja criada em um estado válido.
+            // Validação do Id aqui, já que não vem da BaseEntity
             if (id == Guid.Empty)
             {
                 throw new ArgumentException("ID do instrutor não pode ser vazio.", nameof(id));
@@ -34,31 +33,30 @@ namespace CentroTreinamento.Domain.Entities
             {
                 throw new ArgumentException("Senha hash do instrutor não pode ser vazia.", nameof(senhaHash));
             }
-            // A validação do enum é implícita pelo tipo.
-            // Poderíamos adicionar uma validação se certos status fossem inválidos na criação.
             if (string.IsNullOrWhiteSpace(cref))
             {
                 throw new ArgumentException("CREF do instrutor não pode ser vazio.", nameof(cref));
             }
             if (cpf != null && string.IsNullOrWhiteSpace(cpf))
             {
-                throw new ArgumentException("CPF do instrutor não pode ser vazio.", nameof(cpf));
+                throw new ArgumentException("CPF do instrutor não pode ser vazio se não nulo.", nameof(cpf));
             }
             if (!Enum.IsDefined(typeof(StatusInstrutor), status))
             {
                 throw new ArgumentException("Status inválido.", nameof(status));
             }
-            if (!Enum.IsDefined(typeof(UserRole), role))
+            // Força a Role para ser Instrutor na criação da entidade Instrutor
+            if (role != UserRole.Instrutor)
             {
-                throw new ArgumentException("Role inválida.", nameof(role));
+                throw new ArgumentException("Role inválida para instrutor. Deve ser 'Instrutor'.", nameof(role));
             }
 
             Id = id;
             Nome = nome;
+            Cpf = cpf;
             SenhaHash = senhaHash;
             Status = status;
             Cref = cref;
-            Cpf = cpf;
             Role = role;
         }
 
@@ -66,42 +64,49 @@ namespace CentroTreinamento.Domain.Entities
 
         /// <summary>
         /// Atualiza o status do instrutor.
-        /// Valida se o novo status é válido.
         /// </summary>
         /// <param name="novoStatus">O novo status a ser definido.</param>
-        /// <exception cref="ArgumentException">Lançada se o novo status for inválido (por exemplo, status inválido no enum, embora o tipo já ajude).</exception>
-        public void AtualizarStatus(StatusInstrutor novoStatus) // <--- Aceita o tipo enum
+        public void AtualizarStatus(StatusInstrutor novoStatus)
         {
-            // Validações adicionais podem ser feitas aqui, se, por exemplo,
-            // um instrutor 'Inativo' não puder ir diretamente para 'Ativo' sem um processo.
-            // Por enquanto, apenas atualizamos diretamente.
+            // Poderiam haver validações de transição de status aqui.
             this.Status = novoStatus;
-            // Lógica adicional pode ser adicionada aqui, como registrar um evento de domínio (Domain Event).
         }
 
         /// <summary>
-        /// Atualiza o nome do instrutor.
+        /// Atualiza dados gerais do instrutor.
         /// </summary>
-        /// <param name="novoNome">O novo nome a ser definido.</param>
-        public void AtualizarNome(string novoNome)
+        /// <param name="novoNome">Novo nome do instrutor.</param>
+        /// <param name="novoCpf">Novo CPF do instrutor (opcional).</param>
+        /// <param name="novaSenhaHash">Novo hash da senha (opcional, apenas se a senha for alterada).</param>
+        /// <param name="novoCref">Novo CREF do instrutor.</param>
+        public void AtualizarDados(string novoNome, string? novoCpf, string? novaSenhaHash, string novoCref)
         {
             if (string.IsNullOrWhiteSpace(novoNome))
             {
                 throw new ArgumentException("Nome não pode ser vazio.", nameof(novoNome));
             }
-            Nome = novoNome;
-        }
-
-        // Exemplo de como um método para definir senha hash (mas a lógica de hashing estaria em outro lugar)
-        // O setter de SenhaHash é privado, então precisamos de um método para alterá-lo.
-        // Este método seria chamado por um serviço de domínio/aplicação após o hash da senha.
-        public void SetSenhaHash(string novaSenhaHash)
-        {
-            if (string.IsNullOrWhiteSpace(novaSenhaHash))
+            if (string.IsNullOrWhiteSpace(novoCref))
             {
-                throw new ArgumentException("Nova senha hash não pode ser vazia.", nameof(novaSenhaHash));
+                throw new ArgumentException("CREF não pode ser vazio.", nameof(novoCref));
             }
-            this.SenhaHash = novaSenhaHash;
+
+            Nome = novoNome;
+            Cref = novoCref;
+
+            if (novoCpf != null)
+            {
+                if (string.IsNullOrWhiteSpace(novoCpf))
+                {
+                    throw new ArgumentException("CPF não pode ser vazio se fornecido.", nameof(novoCpf));
+                }
+                Cpf = novoCpf;
+            }
+
+            if (!string.IsNullOrEmpty(novaSenhaHash))
+            {
+                SenhaHash = novaSenhaHash;
+            }
+            // Não atualize Status ou Role aqui, pois são atualizados por métodos específicos.
         }
 
         /// <summary>
@@ -112,10 +117,5 @@ namespace CentroTreinamento.Domain.Entities
         {
             return $"Instrutor{{ Id={Id}, Nome='{Nome}', Status='{Status}', Cref='{Cref}' }}";
         }
-
-        // Os "Serviços" (criação/edição de planos, gestão de agenda, etc.)
-        // NÃO são métodos desta classe de entidade. Eles pertencem a classes de SERVIÇO
-        // que interagem COM objetos Instrutor (e outras entidades/repositórios) para realizar
-        // operações de negócio mais complexas.
     }
 }

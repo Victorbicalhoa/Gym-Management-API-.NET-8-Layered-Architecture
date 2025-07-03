@@ -1,27 +1,34 @@
 ﻿// CentroTreinamento.Application/Services/AuthAppService.cs
-using CentroTreinamento.Application.DTOs;
-using CentroTreinamento.Application.Interfaces;
+using CentroTreinamento.Application.Interfaces; // Para IPasswordHasher
 using CentroTreinamento.Domain.Repositories;
-using CentroTreinamento.Domain.Entities; // Para acessar Aluno e Administrador
+using CentroTreinamento.Domain.Entities; // Para acessar Aluno, Administrador e Instrutor
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-//using CentroTreinamento.Application.PasswordHasher; // Para IPasswordHasher
+using CentroTreinamento.Application.DTOs.Auth;
+using CentroTreinamento.Application.DTOs.Aluno;
+using CentroTreinamento.Application.DTOs.Administrador;
+using CentroTreinamento.Application.DTOs.Instrutor; // Adicionado para InstrutorViewModel
+using CentroTreinamento.Application.Interfaces.Services;
+using CentroTreinamento.Domain.Enums; // Para UserRole, StatusInstrutor etc.
 
 namespace CentroTreinamento.Application.Services
 {
     public class AuthAppService : IAuthAppService
     {
         private readonly IAlunoRepository _alunoRepository;
-        private readonly IAdministradorRepository _administradorRepository; // NOVO: Para buscar administradores
+        private readonly IAdministradorRepository _administradorRepository;
+        private readonly IInstrutorRepository _instrutorRepository; // NOVO: Para buscar instrutores
         private readonly IPasswordHasher _passwordHasher;
 
         public AuthAppService(IAlunoRepository alunoRepository,
-                              IAdministradorRepository administradorRepository, // Injetar
+                              IAdministradorRepository administradorRepository,
+                              IInstrutorRepository instrutorRepository, // NOVO: Injetar o repositório do instrutor
                               IPasswordHasher passwordHasher)
         {
             _alunoRepository = alunoRepository;
             _administradorRepository = administradorRepository;
+            _instrutorRepository = instrutorRepository; // Atribua o repositório do instrutor
             _passwordHasher = passwordHasher;
         }
 
@@ -52,25 +59,23 @@ namespace CentroTreinamento.Application.Services
             };
         }
 
-        // NOVO: Método de login para Administrador
         public async Task<AdministradorViewModel?> LoginAdministradorAsync(LoginInputModel loginModel)
         {
             var cpfLoginLimpo = loginModel.Cpf!.Replace(".", "").Replace("-", "");
 
             var administrador = (await _administradorRepository.FindAsync(a => a.Cpf == cpfLoginLimpo))
-                                     .FirstOrDefault();
+                                       .FirstOrDefault();
 
             if (administrador == null)
             {
-                return null; // Administrador não encontrado
+                return null;
             }
 
             if (!_passwordHasher.VerifyPassword(loginModel.Senha!, administrador.SenhaHash!))
             {
-                return null; // Senha incorreta
+                return null;
             }
 
-            // Mapeia a entidade Administrador para AdministradorViewModel
             return new AdministradorViewModel
             {
                 Id = administrador.Id,
@@ -78,6 +83,37 @@ namespace CentroTreinamento.Application.Services
                 Cpf = administrador.Cpf,
                 Status = administrador.Status,
                 Role = administrador.Role
+            };
+        }
+
+        // NOVO: Método de login para Instrutor
+        public async Task<InstrutorViewModel?> LoginInstrutorAsync(LoginInputModel loginModel)
+        {
+            var cpfLoginLimpo = loginModel.Cpf!.Replace(".", "").Replace("-", "");
+
+            var instrutor = (await _instrutorRepository.FindAsync(i => i.Cpf == cpfLoginLimpo))
+                                       .FirstOrDefault();
+
+            if (instrutor == null)
+            {
+                return null; // Instrutor não encontrado
+            }
+
+            // A senha que o usuário digitou (loginModel.Senha) deve ser verificada contra a SenhaHash do banco
+            if (!_passwordHasher.VerifyPassword(loginModel.Senha!, instrutor.SenhaHash!))
+            {
+                return null; // Senha incorreta
+            }
+
+            // Mapeia a entidade Instrutor para InstrutorViewModel
+            return new InstrutorViewModel
+            {
+                Id = instrutor.Id,
+                Nome = instrutor.Nome!,
+                Cpf = instrutor.Cpf,
+                Cref = instrutor.Cref!, // Adicione o CREF
+                Status = instrutor.Status, // Adicione o Status
+                Role = instrutor.Role
             };
         }
     }
