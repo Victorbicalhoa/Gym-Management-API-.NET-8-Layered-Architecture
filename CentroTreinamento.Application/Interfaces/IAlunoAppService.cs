@@ -11,7 +11,7 @@ namespace CentroTreinamento.Application.Interfaces
         Task<IEnumerable<AlunoViewModel>> GetAllAlunosAsync();
         Task<AlunoViewModel?> GetAlunoByIdAsync(Guid id);
         Task<AlunoViewModel> CreateAlunoAsync(AlunoInputModel alunoInput);
-        Task<bool> UpdateAlunoAsync(Guid id, AlunoInputModel alunoInput);
+        Task<AlunoViewModel?> UpdateAlunoAsync(Guid id, AlunoInputModel alunoInput);      
         Task<bool> DeleteAlunoAsync(Guid id);
         Task<bool> UpdateAlunoStatusAsync(Guid id, StatusAluno novoStatus);
     }

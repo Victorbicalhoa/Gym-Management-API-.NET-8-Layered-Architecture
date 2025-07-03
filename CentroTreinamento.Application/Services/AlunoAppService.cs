@@ -65,7 +65,7 @@ namespace CentroTreinamento.Application.Services
                 alunoInput.Nome!,
                 senhaHash,
                 StatusAluno.Ativo,
-                cpfNormalizado, // <--- Use o CPF normalizado aqui
+                cpfNormalizado, 
                 alunoInput.DataNascimento,
                 alunoInput.Telefone!,
                 UserRole.Aluno
@@ -85,36 +85,62 @@ namespace CentroTreinamento.Application.Services
             };
         }
 
-        public async Task<bool> UpdateAlunoAsync(Guid id, AlunoInputModel alunoInput)
+        public async Task<AlunoViewModel?> UpdateAlunoAsync(Guid id, AlunoInputModel alunoInput) // Retornando ViewModel, ajuste se sua interface for Task<bool>
         {
-            var aluno = await _alunoRepository.GetByIdAsync(id);
-            if (aluno == null) return false;
+            // 1. Carregue a entidade existente do banco de dados
+            var existingAluno = await _alunoRepository.GetByIdAsync(id);
 
-            var senhaHash = aluno.SenhaHash;
-            if (!string.IsNullOrEmpty(alunoInput.Senha))
+            if (existingAluno == null)
             {
-                // Use o _passwordHasher para gerar o hash da nova senha
-                senhaHash = _passwordHasher.HashPassword(alunoInput.Senha!);
+                return null; // Aluno não encontrado
             }
 
-            // Normaliza o CPF para atualização
-            var cpfNormalizado = alunoInput.Cpf!.Replace(".", "").Replace("-", ""); // <--- ALTERAÇÃO AQUI
+            // Normaliza o CPF do input
+            var cpfNormalizado = alunoInput.Cpf!.Replace(".", "").Replace("-", "");
 
-            var alunoAtualizado = new Aluno(
-                aluno.Id,
+            // Hash da nova senha (se fornecida)
+            string? novaSenhaHash = null;
+            if (!string.IsNullOrEmpty(alunoInput.Senha))
+            {
+                novaSenhaHash = _passwordHasher.HashPassword(alunoInput.Senha!);
+            }
+
+            // 2. CHAMA O MÉTODO DA ENTIDADE (se existir) para atualizar os dados
+            // OU atribua diretamente as propriedades se elas tiverem setters públicos
+            existingAluno.AtualizarDados(
                 alunoInput.Nome!,
-                senhaHash!,
-                aluno.Status,
-                cpfNormalizado, // <--- Use o CPF normalizado aqui
+                cpfNormalizado,
+                novaSenhaHash,
                 alunoInput.DataNascimento,
-                alunoInput.Telefone!,
-                aluno.Role // Garanta que UserRole seja mantido ou definido corretamente
+                alunoInput.Telefone
             );
 
-            _alunoRepository.Update(alunoAtualizado);
+            // 3. Chame o método Update do repositório com a entidade EXISTENTE e modificada
+            _alunoRepository.Update(existingAluno);
+            await _alunoRepository.SaveChangesAsync(); // Persiste as mudanças
+
+            // 4. Retorne o ViewModel atualizado
+            return new AlunoViewModel
+            {
+                Id = existingAluno.Id,
+                Nome = existingAluno.Nome,
+                Cpf = existingAluno.Cpf,
+                Status = existingAluno.Status,
+                Role = existingAluno.Role,
+                DataNascimento = existingAluno.DataNascimento,
+                Telefone = existingAluno.Telefone
+            };
+        }
+
+        // Se você tiver um método para atualizar apenas o status (semelhante ao Administrador)
+        public async Task<bool> UpdateAlunoStatusAsync(Guid id, StatusAluno novoStatus)
+        {
+            var existingAluno = await _alunoRepository.GetByIdAsync(id);
+            if (existingAluno == null) return false;
+
+            existingAluno.AtualizarStatus(novoStatus); // Chama o método de domínio
+            _alunoRepository.Update(existingAluno);
             await _alunoRepository.SaveChangesAsync();
-
-
             return true;
         }
 
@@ -128,15 +154,30 @@ namespace CentroTreinamento.Application.Services
             return true;
         }
 
-        public async Task<bool> UpdateAlunoStatusAsync(Guid id, StatusAluno novoStatus)
+        public async Task<AlunoViewModel?> LoginAlunoAsync(string cpf, string senha)
         {
-            var aluno = await _alunoRepository.GetByIdAsync(id);
-            if (aluno == null) return false;
+            var cpfNormalizado = cpf.Replace(".", "").Replace("-", "");
 
-            aluno.AtualizarStatus(novoStatus);
-            _alunoRepository.Update(aluno);
-            await _alunoRepository.SaveChangesAsync();
-            return true;
+            var aluno = (await _alunoRepository.FindAsync(a => a.Cpf == cpfNormalizado)).FirstOrDefault();
+
+            if (aluno == null)
+            {
+                return null;
+            }
+
+            if (!_passwordHasher.VerifyPassword(senha, aluno.SenhaHash!))
+            {
+                return null;
+            }
+
+            return new AlunoViewModel
+            {
+                Id = aluno.Id,
+                Nome = aluno.Nome,
+                Cpf = aluno.Cpf,
+                Status = aluno.Status,
+                Role = aluno.Role
+            };
         }
     }
 }

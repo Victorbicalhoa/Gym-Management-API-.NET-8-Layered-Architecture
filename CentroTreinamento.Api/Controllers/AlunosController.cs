@@ -1,6 +1,7 @@
 ﻿using CentroTreinamento.Application.DTOs;
 using CentroTreinamento.Application.Interfaces;
 using CentroTreinamento.Domain.Enums;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc; // ESSENCIAL: Garante que o controlador funcione como uma API ASP.NET Core
 using System;
 using System.Collections.Generic;
@@ -73,20 +74,24 @@ namespace CentroTreinamento.Api.Controllers
         /// <param name="id">O GUID do aluno a ser atualizado.</param>
         /// <param name="alunoInput">Novos dados do aluno.</param>
         /// <returns>NoContent se a atualização for bem-sucedida, NotFound se o aluno não existir.</returns>
-        [HttpPut("{id}")] // Mapeia para requisições PUT em /api/alunos/{id}
-        public async Task<ActionResult> Put(Guid id, [FromBody] AlunoInputModel alunoInput)
+        [HttpPut("{id}")]
+        [Authorize(Roles = "Administrador, Aluno")] // Se aluno puder atualizar a si mesmo
+        public async Task<ActionResult<AlunoViewModel>> Put(Guid id, [FromBody] AlunoInputModel inputModel)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState); // Retorna 400 Bad Request
+                return BadRequest(ModelState);
             }
 
-            var updated = await _alunoAppService.UpdateAlunoAsync(id, alunoInput);
-            if (!updated)
+            var updatedAluno = await _alunoAppService.UpdateAlunoAsync(id, inputModel);
+
+            if (updatedAluno == null)
             {
-                return NotFound(); // Retorna 404 Not Found se o aluno não for encontrado
+                return NotFound($"Aluno com ID {id} não encontrado.");
             }
-            return NoContent(); // Retorna 204 No Content para atualização bem-sucedida sem retorno de corpo
+
+            // Retorna 200 OK com o objeto atualizado no corpo
+            return Ok(updatedAluno);
         }
 
         /// <summary>

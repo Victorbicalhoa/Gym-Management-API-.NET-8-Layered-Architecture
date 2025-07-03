@@ -63,23 +63,21 @@ namespace CentroTreinamento.Domain.Entities
             Status = novoStatus;
         }
 
-        public void AtualizarNome(string novoNome)
+        // NOVO MÉTODO para atualizar informações 
+        public void AtualizarDados(string novoNome, string novoCpf, string? novaSenhaHash = null, DateTime? novaDataNascimento = null, string? novoTelefone = null)
         {
-            if (string.IsNullOrWhiteSpace(novoNome))
-            {
-                throw new ArgumentException("Nome não pode ser vazio.", nameof(novoNome));
-            }
+            // Validações podem ir aqui
             Nome = novoNome;
-        }
-
-        public void SetSenhaHash(string novaSenhaHash)
-        {
-            if (string.IsNullOrWhiteSpace(novaSenhaHash))
+            Cpf = novoCpf;
+            if (!string.IsNullOrEmpty(novaSenhaHash))
             {
-                throw new ArgumentException("Nova senha hash não pode ser vazia.", nameof(novaSenhaHash));
+                SenhaHash = novaSenhaHash;
             }
-            SenhaHash = novaSenhaHash;
-        }
+            DataNascimento = novaDataNascimento ?? DataNascimento; // Se novaDataNascimento for nulo, mantém a atual
+            Telefone = novoTelefone ?? Telefone; // Se novoTelefone for nulo, mantém o atual
+
+            // Não atualize Status ou Role aqui a menos que seja intencional
+        }       
 
         public override string ToString()
         {
