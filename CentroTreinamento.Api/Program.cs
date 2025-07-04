@@ -34,6 +34,7 @@ builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IAdministradorAppService, AdministradorAppService>();
 builder.Services.AddScoped<IAlunoAppService, AlunoAppService>();
 builder.Services.AddScoped<IInstrutorAppService, InstrutorAppService>();
+builder.Services.AddScoped<IRecepcionistaAppService, RecepcionistaAppService>();
 
 // Registro do serviço de Hashing de Senhas
 builder.Services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();

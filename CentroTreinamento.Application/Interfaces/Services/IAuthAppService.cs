@@ -3,6 +3,8 @@ using CentroTreinamento.Application.DTOs.Administrador;
 using CentroTreinamento.Application.DTOs.Aluno;
 using CentroTreinamento.Application.DTOs.Auth;
 using CentroTreinamento.Application.DTOs.Instrutor;
+using CentroTreinamento.Application.DTOs.Recepcionista;
+
 
 
 
@@ -21,5 +23,8 @@ namespace CentroTreinamento.Application.Interfaces.Services
 
         // Adicione o método para login de Instrutor
         Task<InstrutorViewModel?> LoginInstrutorAsync(LoginInputModel loginModel);
+
+        // Adicione o método para login de Recepcionista
+        Task<RecepcionistaViewModel?> LoginRecepcionistaAsync(LoginInputModel loginModel); // Adicionar este método
     }
 }

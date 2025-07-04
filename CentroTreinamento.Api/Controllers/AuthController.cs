@@ -42,6 +42,7 @@ namespace CentroTreinamento.Api.Controllers
                 return Unauthorized(new { message = "CPF ou senha inválidos." });
             }
 
+            // Certifique-se de que o Aluno tem as propriedades Nome e Role
             var token = GenerateJwtToken(aluno.Id.ToString(), aluno.Cpf!, aluno.Nome!, aluno.Role.ToString());
 
             return Ok(new AuthResponseViewModel
@@ -71,6 +72,7 @@ namespace CentroTreinamento.Api.Controllers
                 return Unauthorized(new { message = "Credenciais inválidas." });
             }
 
+            // Certifique-se de que o Administrador tem as propriedades Nome e Role
             var tokenString = GenerateJwtToken(administrador.Id.ToString(), administrador.Cpf!, administrador.Nome!, administrador.Role.ToString());
 
             return Ok(new AuthResponseViewModel
@@ -84,7 +86,7 @@ namespace CentroTreinamento.Api.Controllers
             });
         }
 
-        // NOVO ENDPOINT PARA LOGIN DE INSTRUTOR
+        // ENDPOINT PARA LOGIN DE INSTRUTOR (já existente)
         [HttpPost("login/instrutor")] // A rota completa será "api/Auth/login/instrutor"
         [AllowAnonymous]
         public async Task<ActionResult<AuthResponseViewModel>> LoginInstrutor([FromBody] LoginInputModel loginModel)
@@ -94,8 +96,6 @@ namespace CentroTreinamento.Api.Controllers
                 return BadRequest(ModelState);
             }
 
-            // Chama o método no seu AuthAppService para autenticar o instrutor
-            // Você precisará ter um método como LoginInstrutorAsync no seu IAuthAppService e AuthAppService.cs
             var instrutor = await _authAppService.LoginInstrutorAsync(loginModel);
 
             if (instrutor == null)
@@ -103,7 +103,6 @@ namespace CentroTreinamento.Api.Controllers
                 return Unauthorized(new { message = "CPF ou senha inválidos." });
             }
 
-            // Gera o token JWT para o instrutor
             var tokenString = GenerateJwtToken(instrutor.Id.ToString(), instrutor.Cpf!, instrutor.Nome!, instrutor.Role.ToString());
 
             return Ok(new AuthResponseViewModel
@@ -114,6 +113,40 @@ namespace CentroTreinamento.Api.Controllers
                 Cpf = instrutor.Cpf!,
                 Nome = instrutor.Nome!,
                 Role = instrutor.Role.ToString()
+            });
+        }
+
+        // NOVO ENDPOINT PARA LOGIN DE RECEPCIONISTA
+        [HttpPost("login/recepcionista")] // A rota completa será "api/Auth/login/recepcionista"
+        [AllowAnonymous]
+        public async Task<ActionResult<AuthResponseViewModel>> LoginRecepcionista([FromBody] LoginInputModel loginModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            // Chama o método no seu AuthAppService para autenticar a recepcionista
+            // Você precisará ter um método como LoginRecepcionistaAsync no seu IAuthAppService e AuthAppService.cs
+            var recepcionista = await _authAppService.LoginRecepcionistaAsync(loginModel);
+
+            if (recepcionista == null)
+            {
+                return Unauthorized(new { message = "CPF ou senha inválidos." });
+            }
+
+            // Gera o token JWT para a recepcionista
+            // Certifique-se de que a Recepcionista tem as propriedades Nome e Role
+            var tokenString = GenerateJwtToken(recepcionista.Id.ToString(), recepcionista.Cpf!, recepcionista.Nome!, recepcionista.Role.ToString());
+
+            return Ok(new AuthResponseViewModel
+            {
+                AccessToken = tokenString,
+                TokenType = "Bearer",
+                ExpiresIn = (int)TimeSpan.FromMinutes(double.Parse(_configuration["JwtSettings:ExpirationInMinutes"]!)).TotalSeconds,
+                Cpf = recepcionista.Cpf!,
+                Nome = recepcionista.Nome!,
+                Role = recepcionista.Role.ToString()
             });
         }
 
@@ -131,7 +164,7 @@ namespace CentroTreinamento.Api.Controllers
             {
                 new Claim(ClaimTypes.NameIdentifier, userId),
                 new Claim(ClaimTypes.Name, userName),
-                new Claim(ClaimTypes.SerialNumber, userCpf),
+                new Claim(ClaimTypes.SerialNumber, userCpf), // Usando SerialNumber para CPF é comum
                 new Claim(ClaimTypes.Role, userRole)
             });
 

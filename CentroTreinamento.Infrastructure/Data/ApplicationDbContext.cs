@@ -80,6 +80,22 @@ namespace CentroTreinamento.Infrastructure.Data
                 // O campo Role do Enum será persistido como int por padrão.
             });
 
+            // Configuração para Recepcionista
+            modelBuilder.Entity<Recepcionista>(entity =>
+            {
+                entity.HasKey(e => e.Id); // Define Id como chave primária
+                entity.Property(e => e.Nome).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.Cpf).IsRequired().HasMaxLength(11); // CPF sem formatação
+                entity.HasIndex(e => e.Cpf).IsUnique(); // Garante que o CPF seja único
+                entity.Property(e => e.SenhaHash).IsRequired();
+                entity.Property(e => e.Status) // Mapeia o Enum StatusRecepcionista para string
+                      .HasConversion<string>()
+                      .HasMaxLength(20);
+                entity.Property(e => e.Role) // Mapeia o Enum UserRole para string
+                      .HasConversion<string>()
+                      .HasMaxLength(20);
+            });
+
             // Repita para outras entidades se necessário, como Agendamento, Administrador, etc.
             modelBuilder.Entity<Agendamento>().HasKey(a => a.Id);
             modelBuilder.Entity<PlanoDeTreino>().HasKey(p => p.Id);
