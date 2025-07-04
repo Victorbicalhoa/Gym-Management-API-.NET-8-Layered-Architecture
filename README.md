@@ -8,6 +8,8 @@ Um sistema abrangente para gerenciar academias, incluindo funcionalidades para m
 
 Este projeto consiste em uma API RESTful desenvolvida em ASP.NET Core para gerenciar as operações de um centro de treinamento. Ele segue uma **arquitetura em camadas** (Domain, Infrastructure, Application, API) para promover a separação de responsabilidades, manutenibilidade e escalabilidade.
 
+Até o momento, o sistema possui **gerenciamento completo de usuários** para as quatro entidades principais: **Administradores, Alunos, Instrutores e Recepcionistas**, incluindo **autenticação e autorização robustas via JWT**.
+
 ---
 
 ## Tecnologias Utilizadas
@@ -17,6 +19,8 @@ Este projeto consiste em uma API RESTful desenvolvida em ASP.NET Core para geren
 * **Arquitetura:** Camadas (Domain, Infrastructure, Application, API)
 * **Banco de Dados:** SQL Server
 * **ORM:** Entity Framework Core 9.0.6
+* **Autenticação/Autorização:** JWT (JSON Web Tokens)
+* **Hashing de Senhas:** BCrypt.NET (ou similar via `IPasswordHasher`)
 * **Documentação da API:** Swagger/Swashbuckle.AspNetCore 9.0.1
 * **Controle de Versão:** Git / GitHub
 
@@ -55,7 +59,7 @@ Este projeto consiste em uma API RESTful desenvolvida em ASP.NET Core para geren
     dotnet build
     ```
 
-4.  **Configure a String de Conexão:**
+4.  **Configure a String de Conexão e Chave JWT:**
     * Abra o arquivo `appsettings.json` no projeto **`CentroTreinamento.Api`**.
     * Atualize a string de conexão `DefaultConnection` para apontar para o seu servidor SQL Server.
         ```json
@@ -63,10 +67,17 @@ Este projeto consiste em uma API RESTful desenvolvida em ASP.NET Core para geren
           "ConnectionStrings": {
             "DefaultConnection": "Server=SUA_INSTANCIA_SQL;Database=CentroTreinamentoDb;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True"
           },
+          "JwtSettings": {
+            "Secret": "SUA_CHAVE_SECRETA_MUITO_LONGA_E_SEGURA_AQUI_PELO_MENOS_32_CARACTERES", // Altere isso!
+            "Issuer": "GymManagementSystem",
+            "Audience": "GymClients",
+            ""ExpirationInMinutes": 60
+          },
           // ... outras configurações
         }
         ```
         *Substitua `SUA_INSTANCIA_SQL` pelo nome do seu servidor/instância SQL Server (ex: `(localdb)\\MSSQLLocalDB` ou `localhost`).*
+        *`SUA_CHAVE_SECRETA_MUITO_LONGA_E_SEGURA_AQUI_PELO_MENOS_32_CARACTERES` deve ser uma string forte e secreta.*
 
 5.  **Aplique as Migrações do Banco de Dados:**
     * Abra o **Package Manager Console** no Visual Studio (View > Other Windows > Package Manager Console).
@@ -75,10 +86,14 @@ Este projeto consiste em uma API RESTful desenvolvida em ASP.NET Core para geren
         ```powershell
         Update-Database
         ```
-        *Se esta for a primeira vez e você ainda não tiver migrações criadas, pode ser necessário gerar uma inicial primeiro:*
-        ```powersershell
-        Add-Migration InitialCreate
+        *Se esta for a primeira vez e você ainda não tiver migrações criadas, pode ser necessário gerar uma inicial primeiro (ex: `Add-Migration InitialCreate`):*
+        ```powershell
+        Add-Migration NomeDaSuaPrimeiraMigracao
         Update-Database
+        ```
+        *Alternativamente, você pode usar o .NET CLI a partir da raiz da solução:*
+        ```bash
+        dotnet ef database update --project CentroTreinamento.Infrastructure --startup-project CentroTreinamento.Api
         ```
 
 6.  **Abra e Execute no Visual Studio:**
@@ -88,16 +103,47 @@ Este projeto consiste em uma API RESTful desenvolvida em ASP.NET Core para geren
 
 ---
 
-## Endpoints Disponíveis (Alunos)
+## Endpoints Disponíveis
 
-Atualmente, os seguintes endpoints para a entidade `Aluno` estão implementados:
+Atualmente, a API oferece gerenciamento completo (CRUD) e autenticação para as seguintes entidades de usuário:
 
-* `GET /api/alunos`: Retorna uma lista de todos os alunos cadastrados.
-* `GET /api/alunos/{id}`: Retorna um aluno específico pelo seu ID (GUID).
-* `POST /api/alunos`: Cria um novo aluno com base nos dados fornecidos.
-* `PUT /api/alunos/{id}`: Atualiza os dados de um aluno existente.
-* `PATCH /api/alunos/{id}/status`: Atualiza apenas o status (ex: Ativo, Inativo) de um aluno.
-* `DELETE /api/alunos/{id}`: Exclui um aluno do sistema.
+* **Administradores:**
+    * `GET /api/administradores`
+    * `GET /api/administradores/{id}`
+    * `POST /api/administradores`
+    * `PUT /api/administradores/{id}`
+    * `PATCH /api/administradores/{id}/status`
+    * `DELETE /api/administradores/{id}`
+    * `POST /api/Auth/login/administrador` (Autenticação)
+
+* **Alunos:**
+    * `GET /api/alunos`
+    * `GET /api/alunos/{id}`
+    * `POST /api/alunos`
+    * `PUT /api/alunos/{id}`
+    * `PATCH /api/alunos/{id}/status`
+    * `DELETE /api/alunos/{id}`
+    * `POST /api/Auth/login/aluno` (Autenticação)
+
+* **Instrutores:**
+    * `GET /api/instrutores`
+    * `GET /api/instrutores/{id}`
+    * `POST /api/instrutores`
+    * `PUT /api/instrutores/{id}`
+    * `PATCH /api/instrutores/{id}/status`
+    * `DELETE /api/instrutores/{id}`
+    * `POST /api/Auth/login/instrutor` (Autenticação)
+
+* **Recepcionistas:**
+    * `GET /api/recepcionistas`
+    * `GET /api/recepcionistas/{id}`
+    * `POST /api/recepcionistas`
+    * `PUT /api/recepcionistas/{id}`
+    * `PATCH /api/recepcionistas/{id}/status`
+    * `DELETE /api/recepcionistas/{id}`
+    * `POST /api/Auth/login/recepcionista` (Autenticação)
+
+**Autenticação:** Para acessar a maioria dos endpoints de gerenciamento, é necessário obter um JWT válido através dos endpoints de login e incluí-lo no cabeçalho `Authorization` como `Bearer Token`.
 
 ---
 
@@ -105,10 +151,10 @@ Atualmente, os seguintes endpoints para a entidade `Aluno` estão implementados:
 
 O projeto está em constante evolução. As próximas etapas importantes incluem:
 
-* **Implementar Autenticação e Autorização (JWT):** Desenvolver um sistema de segurança robusto para proteger os endpoints da API.
-* **Desenvolvimento de Outras Entidades:** Implementar funcionalidades CRUD completas para Instrutores, Agendamentos, Planos de Treino, Pagamentos e Administradores, seguindo o mesmo padrão arquitetural.
-* **Testes Unitários:** Adicionar testes unitários para as camadas `Domain` e `Application` a fim de garantir a qualidade e a confiabilidade do código.
-* **Validações de Negócio Avançadas:** Incorporar validações mais complexas e regras de negócio específicas em nível de domínio.
+* **Testes Unitários:** Adicionar testes unitários abrangentes para as camadas `Domain` e `Application` a fim de garantir a qualidade e a confiabilidade do código.
+* **Validações de Negócio Avançadas:** Incorporar validações mais complexas e regras de negócio específicas em nível de domínio, para além das validações de DTO.
+* **Desenvolvimento de Outras Entidades:** Implementar funcionalidades CRUD completas para entidades como **Agendamentos, Planos de Treino, Pagamentos**, etc., seguindo o mesmo padrão arquitetural.
+* **Políticas de Autorização Detalhadas:** Refinar as políticas de autorização (`[Authorize(Roles = "...")`) em todos os endpoints para um controle de acesso granular baseado nas regras de negócio de cada papel.
 
 ---
 
