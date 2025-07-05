@@ -135,8 +135,8 @@ namespace CentroTreinamento.Application.Services
             return new RecepcionistaViewModel
             {
                 Id = recepcionista.Id,
-                Nome = recepcionista.Nome,
-                Cpf = recepcionista.Cpf,
+                Nome = recepcionista.Nome!,
+                Cpf = recepcionista.Cpf!,
                 Status = recepcionista.Status,
                 Role = recepcionista.Role
             };

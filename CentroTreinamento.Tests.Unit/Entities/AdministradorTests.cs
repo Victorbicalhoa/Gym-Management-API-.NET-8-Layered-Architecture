@@ -51,7 +51,7 @@ namespace CentroTreinamento.Tests.Unit.Domain.Entities
         [InlineData(null)]
         [InlineData("")]
         [InlineData("   ")]
-        public void Administrador_Constructor_ShouldThrowArgumentException_WhenNomeIsInvalid(string invalidNome)
+        public void Administrador_Constructor_ShouldThrowArgumentException_WhenNomeIsInvalid(string? invalidNome)
         {
             // Arrange
             var id = Guid.NewGuid();
@@ -69,7 +69,7 @@ namespace CentroTreinamento.Tests.Unit.Domain.Entities
         [InlineData(null)]
         [InlineData("")]
         [InlineData("   ")]
-        public void Administrador_Constructor_ShouldThrowArgumentException_WhenSenhaHashIsInvalid(string invalidSenhaHash)
+        public void Administrador_Constructor_ShouldThrowArgumentException_WhenSenhaHashIsInvalid(string? invalidSenhaHash)
         {
             // Arrange
             var id = Guid.NewGuid();
@@ -219,7 +219,7 @@ namespace CentroTreinamento.Tests.Unit.Domain.Entities
         [InlineData(null)]
         [InlineData("")]
         [InlineData("   ")]
-        public void Administrador_AtualizarDados_ShouldThrowArgumentException_WhenNomeIsInvalid(string invalidNome)
+        public void Administrador_AtualizarDados_ShouldThrowArgumentException_WhenNomeIsInvalid(string? invalidNome)
         {
             // Arrange
             var administrador = new Administrador(Guid.NewGuid(), "Admin Original", "hash", StatusAdministrador.Ativo, UserRole.Administrador, "12345678900");
@@ -260,7 +260,7 @@ namespace CentroTreinamento.Tests.Unit.Domain.Entities
         [InlineData(null)]
         [InlineData("")]
         [InlineData("   ")]
-        public void Administrador_SetSenhaHash_ShouldThrowArgumentException_WhenNovaSenhaHashIsInvalid(string invalidSenhaHash)
+        public void Administrador_SetSenhaHash_ShouldThrowArgumentException_WhenNovaSenhaHashIsInvalid(string? invalidSenhaHash)
         {
             // Arrange
             var administrador = new Administrador(Guid.NewGuid(), "Admin Original", "hashOriginal", StatusAdministrador.Ativo, UserRole.Administrador, "12345678900");

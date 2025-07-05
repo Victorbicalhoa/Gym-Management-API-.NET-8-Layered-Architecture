@@ -8,12 +8,12 @@ namespace CentroTreinamento.Tests.Unit.Domain.Entities
 {
     public class RecepcionistaTests
     {
-        private Guid _validId = Guid.NewGuid();
-        private string _validNome = "Recepcionista Teste";
-        private string _validCpf = "11122233344";
-        private string _validSenhaHash = "hashedSenha123";
-        private StatusRecepcionista _validStatus = StatusRecepcionista.Ativo;
-        private UserRole _validRole = UserRole.Recepcionista;
+        private readonly Guid _validId = Guid.NewGuid();
+        private readonly string _validNome = "Recepcionista Teste";
+        private readonly string _validCpf = "11122233344";
+        private readonly string _validSenhaHash = "hashedSenha123";
+        private readonly StatusRecepcionista _validStatus = StatusRecepcionista.Ativo;
+        private readonly UserRole _validRole = UserRole.Recepcionista;
 
         // --- Testes do Construtor ---
 
@@ -48,7 +48,7 @@ namespace CentroTreinamento.Tests.Unit.Domain.Entities
         [InlineData(null)]
         [InlineData("")]
         [InlineData("   ")]
-        public void Recepcionista_Constructor_ShouldThrowArgumentException_WhenNomeIsInvalid(string invalidNome)
+        public void Recepcionista_Constructor_ShouldThrowArgumentException_WhenNomeIsInvalid(string? invalidNome)
         {
             // Act & Assert
             var exception = Assert.Throws<ArgumentException>(() => new Recepcionista(_validId, invalidNome!, _validCpf, _validSenhaHash));
@@ -60,7 +60,7 @@ namespace CentroTreinamento.Tests.Unit.Domain.Entities
         [InlineData(null)]
         [InlineData("")]
         [InlineData("   ")]
-        public void Recepcionista_Constructor_ShouldThrowArgumentException_WhenCpfIsInvalid(string invalidCpf)
+        public void Recepcionista_Constructor_ShouldThrowArgumentException_WhenCpfIsInvalid(string? invalidCpf)
         {
             // Act & Assert
             var exception = Assert.Throws<ArgumentException>(() => new Recepcionista(_validId, _validNome, invalidCpf!, _validSenhaHash));
@@ -72,7 +72,7 @@ namespace CentroTreinamento.Tests.Unit.Domain.Entities
         [InlineData(null)]
         [InlineData("")]
         [InlineData("   ")]
-        public void Recepcionista_Constructor_ShouldThrowArgumentException_WhenSenhaHashIsInvalid(string invalidSenhaHash)
+        public void Recepcionista_Constructor_ShouldThrowArgumentException_WhenSenhaHashIsInvalid(string? invalidSenhaHash)
         {
             // Act & Assert
             var exception = Assert.Throws<ArgumentException>(() => new Recepcionista(_validId, _validNome, _validCpf, invalidSenhaHash!));

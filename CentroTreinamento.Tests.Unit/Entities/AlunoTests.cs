@@ -78,7 +78,7 @@ namespace CentroTreinamento.Tests.Unit.Domain.Entities
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public void AlunoConstructor_ShouldThrowArgumentException_WhenNomeIsNullOrWhiteSpace(string invalidNome)
+        public void AlunoConstructor_ShouldThrowArgumentException_WhenNomeIsNullOrWhiteSpace(string? invalidNome)
         {
             // Arrange
             var id = Guid.NewGuid();
@@ -90,7 +90,7 @@ namespace CentroTreinamento.Tests.Unit.Domain.Entities
             var role = UserRole.Aluno;
 
             // Act & Assert
-            var ex = Assert.Throws<ArgumentException>(() => new Aluno(id, invalidNome, senhaHash, status, cpf, dataNascimento, telefone, role));
+            var ex = Assert.Throws<ArgumentException>(() => new Aluno(id, invalidNome!, senhaHash, status, cpf, dataNascimento, telefone, role));
             Assert.Contains("Nome do aluno não pode ser vazio.", ex.Message);
         }
 
@@ -98,7 +98,7 @@ namespace CentroTreinamento.Tests.Unit.Domain.Entities
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public void AlunoConstructor_ShouldThrowArgumentException_WhenSenhaHashIsNullOrWhiteSpace(string invalidSenhaHash)
+        public void AlunoConstructor_ShouldThrowArgumentException_WhenSenhaHashIsNullOrWhiteSpace(string? invalidSenhaHash)
         {
             // Arrange
             var id = Guid.NewGuid();
@@ -110,7 +110,7 @@ namespace CentroTreinamento.Tests.Unit.Domain.Entities
             var role = UserRole.Aluno;
 
             // Act & Assert
-            var ex = Assert.Throws<ArgumentException>(() => new Aluno(id, nome, invalidSenhaHash, status, cpf, dataNascimento, telefone, role));
+            var ex = Assert.Throws<ArgumentException>(() => new Aluno(id, nome, invalidSenhaHash!, status, cpf, dataNascimento, telefone, role));
             Assert.Contains("Senha hash do aluno não pode ser vazia.", ex.Message);
         }
 
@@ -118,7 +118,7 @@ namespace CentroTreinamento.Tests.Unit.Domain.Entities
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public void AlunoConstructor_ShouldThrowArgumentException_WhenCpfIsNullOrWhiteSpace(string invalidCpf)
+        public void AlunoConstructor_ShouldThrowArgumentException_WhenCpfIsNullOrWhiteSpace(string? invalidCpf)
         {
             // Arrange
             var id = Guid.NewGuid();
@@ -130,7 +130,7 @@ namespace CentroTreinamento.Tests.Unit.Domain.Entities
             var role = UserRole.Aluno;
 
             // Act & Assert
-            var ex = Assert.Throws<ArgumentException>(() => new Aluno(id, nome, senhaHash, status, invalidCpf, dataNascimento, telefone, role));
+            var ex = Assert.Throws<ArgumentException>(() => new Aluno(id, nome, senhaHash, status, invalidCpf!, dataNascimento, telefone, role));
             Assert.Contains("CPF do aluno não pode ser vazio.", ex.Message);
         }
 
@@ -138,7 +138,7 @@ namespace CentroTreinamento.Tests.Unit.Domain.Entities
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public void AlunoConstructor_ShouldThrowArgumentException_WhenTelefoneIsNullOrWhiteSpace(string invalidTelefone)
+        public void AlunoConstructor_ShouldThrowArgumentException_WhenTelefoneIsNullOrWhiteSpace(string? invalidTelefone)
         {
             // Arrange
             var id = Guid.NewGuid();
@@ -150,7 +150,7 @@ namespace CentroTreinamento.Tests.Unit.Domain.Entities
             var role = UserRole.Aluno;
 
             // Act & Assert
-            var ex = Assert.Throws<ArgumentException>(() => new Aluno(id, nome, senhaHash, status, cpf, dataNascimento, invalidTelefone, role));
+            var ex = Assert.Throws<ArgumentException>(() => new Aluno(id, nome, senhaHash, status, cpf, dataNascimento, invalidTelefone!, role));
             Assert.Contains("Telefone do aluno não pode ser vazio.", ex.Message);
         }
 

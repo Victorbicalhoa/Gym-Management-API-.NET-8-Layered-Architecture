@@ -43,8 +43,8 @@ namespace CentroTreinamento.Application.Services
             return new RecepcionistaViewModel
             {
                 Id = recepcionista.Id,
-                Nome = recepcionista.Nome,
-                Cpf = recepcionista.Cpf,
+                Nome = recepcionista.Nome!,
+                Cpf = recepcionista.Cpf!,
                 Status = recepcionista.Status,
                 Role = recepcionista.Role
             };
@@ -61,8 +61,8 @@ namespace CentroTreinamento.Application.Services
             return new RecepcionistaViewModel
             {
                 Id = recepcionista.Id,
-                Nome = recepcionista.Nome,
-                Cpf = recepcionista.Cpf,
+                Nome = recepcionista.Nome!,
+                Cpf = recepcionista.Cpf!,
                 Status = recepcionista.Status,
                 Role = recepcionista.Role
             };
@@ -74,8 +74,8 @@ namespace CentroTreinamento.Application.Services
             return recepcionistas.Select(r => new RecepcionistaViewModel
             {
                 Id = r.Id,
-                Nome = r.Nome,
-                Cpf = r.Cpf,
+                Nome = r.Nome!,
+                Cpf = r.Cpf!,
                 Status = r.Status,
                 Role = r.Role
             }).ToList();
@@ -147,8 +147,8 @@ namespace CentroTreinamento.Application.Services
             return new RecepcionistaViewModel
             {
                 Id = recepcionista.Id,
-                Nome = recepcionista.Nome,
-                Cpf = recepcionista.Cpf,
+                Nome = recepcionista.Nome!,
+                Cpf = recepcionista.Cpf!,
                 Status = recepcionista.Status,
                 Role = recepcionista.Role
             };

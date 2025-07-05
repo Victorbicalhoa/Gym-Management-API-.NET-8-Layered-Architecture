@@ -8,9 +8,9 @@ namespace CentroTreinamento.Domain.Entities
     {
         // Propriedades padrão para atores, incluindo Id explicitamente
         public Guid Id { get; private set; } // Id deve ser declarado aqui
-        public string Nome { get; private set; }
-        public string Cpf { get; private set; }
-        public string SenhaHash { get; private set; }
+        public string? Nome { get; private set; }
+        public string? Cpf { get; private set; }
+        public string? SenhaHash { get; private set; }
         public StatusRecepcionista Status { get; private set; }
         public UserRole Role { get; private set; }
 

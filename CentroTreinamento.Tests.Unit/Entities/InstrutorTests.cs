@@ -74,7 +74,7 @@ namespace CentroTreinamento.Tests.Unit.Domain.Entities
         [InlineData(null)]
         [InlineData("")]
         [InlineData("   ")]
-        public void Instrutor_Constructor_ShouldThrowArgumentException_WhenNomeIsInvalid(string invalidNome)
+        public void Instrutor_Constructor_ShouldThrowArgumentException_WhenNomeIsInvalid(string? invalidNome)
         {
             // Arrange
             var id = Guid.NewGuid();
@@ -93,7 +93,7 @@ namespace CentroTreinamento.Tests.Unit.Domain.Entities
         [InlineData(null)]
         [InlineData("")]
         [InlineData("   ")]
-        public void Instrutor_Constructor_ShouldThrowArgumentException_WhenSenhaHashIsInvalid(string invalidSenhaHash)
+        public void Instrutor_Constructor_ShouldThrowArgumentException_WhenSenhaHashIsInvalid(string? invalidSenhaHash)
         {
             // Arrange
             var id = Guid.NewGuid();
@@ -112,7 +112,7 @@ namespace CentroTreinamento.Tests.Unit.Domain.Entities
         [InlineData(null)]
         [InlineData("")]
         [InlineData("   ")]
-        public void Instrutor_Constructor_ShouldThrowArgumentException_WhenCrefIsInvalid(string invalidCref)
+        public void Instrutor_Constructor_ShouldThrowArgumentException_WhenCrefIsInvalid(string? invalidCref)
         {
             // Arrange
             var id = Guid.NewGuid();
