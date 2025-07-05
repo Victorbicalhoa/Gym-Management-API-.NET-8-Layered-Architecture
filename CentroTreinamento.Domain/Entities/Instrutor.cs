@@ -1,12 +1,13 @@
-﻿using System;
-using CentroTreinamento.Domain.Enums; 
+﻿// CentroTreinamento.Domain.Entities/Instrutor.cs
+using System;
+using CentroTreinamento.Domain.Enums;
 
 namespace CentroTreinamento.Domain.Entities
 {
     public class Instrutor
     {
         // Propriedades padrão para atores
-        public Guid Id { get; private set; } 
+        public Guid Id { get; private set; }
         public string? Nome { get; private set; }
         public string? Cpf { get; private set; }
         public string? SenhaHash { get; private set; }
@@ -37,6 +38,7 @@ namespace CentroTreinamento.Domain.Entities
             {
                 throw new ArgumentException("CREF do instrutor não pode ser vazio.", nameof(cref));
             }
+            // CPF pode ser null, mas se não for null, não pode ser vazio/whitespace
             if (cpf != null && string.IsNullOrWhiteSpace(cpf))
             {
                 throw new ArgumentException("CPF do instrutor não pode ser vazio se não nulo.", nameof(cpf));
@@ -69,44 +71,81 @@ namespace CentroTreinamento.Domain.Entities
         public void AtualizarStatus(StatusInstrutor novoStatus)
         {
             // Poderiam haver validações de transição de status aqui.
+            // Validação básica para garantir que o status é um enum válido
+            if (!Enum.IsDefined(typeof(StatusInstrutor), novoStatus))
+            {
+                throw new ArgumentException("Status de instrutor inválido.", nameof(novoStatus));
+            }
             this.Status = novoStatus;
         }
 
         /// <summary>
         /// Atualiza dados gerais do instrutor.
+        /// Os campos são atualizados apenas se os novos valores não forem nulos ou vazios/whitespace.
         /// </summary>
-        /// <param name="novoNome">Novo nome do instrutor.</param>
-        /// <param name="novoCpf">Novo CPF do instrutor (opcional).</param>
-        /// <param name="novaSenhaHash">Novo hash da senha (opcional, apenas se a senha for alterada).</param>
-        /// <param name="novoCref">Novo CREF do instrutor.</param>
-        public void AtualizarDados(string novoNome, string? novoCpf, string? novaSenhaHash, string novoCref)
+        /// <param name="novoNome">Novo nome do instrutor (opcional, se nulo/vazio, não altera).</param>
+        /// <param name="novoCpf">Novo CPF do instrutor (opcional, se nulo/vazio, não altera).</param>
+        /// <param name="novaSenhaHash">Novo hash da senha (opcional, se nulo/vazio, não altera).</param>
+        /// <param name="novoCref">Novo CREF do instrutor (opcional, se nulo/vazio, não altera).</param>
+        public void AtualizarDados(string? novoNome, string? novoCpf, string? novaSenhaHash, string? novoCref)
         {
-            if (string.IsNullOrWhiteSpace(novoNome))
+            // Atualiza Nome apenas se o novoNome não for nulo, vazio ou conter apenas espaços em branco.
+            if (!string.IsNullOrWhiteSpace(novoNome))
             {
-                throw new ArgumentException("Nome não pode ser vazio.", nameof(novoNome));
-            }
-            if (string.IsNullOrWhiteSpace(novoCref))
-            {
-                throw new ArgumentException("CREF não pode ser vazio.", nameof(novoCref));
+                Nome = novoNome;
             }
 
-            Nome = novoNome;
-            Cref = novoCref;
-
-            if (novoCpf != null)
+            // Atualiza CPF apenas se o novoCpf não for nulo, vazio ou conter apenas espaços em branco.
+            // Se string.Empty ou "   " for passado, isso significa que o CPF deve ser limpo/removido.
+            // No entanto, se queremos manter o CPF existente, devemos verificar null/whitespace.
+            // A validação no construtor indica que CPF não pode ser vazio se não nulo.
+            // Aqui, se um novoCpf for fornecido (não null), ele deve ser válido.
+            if (novoCpf != null) // Se for null, não faz nada (mantém o existente)
             {
                 if (string.IsNullOrWhiteSpace(novoCpf))
                 {
+                    // Se o CPF é fornecido, mas é vazio/whitespace, significa que a intenção é setar como vazio,
+                    // mas nossa regra de construtor não permite, então podemos decidir:
+                    // 1. Manter o CPF existente (comportamento atual para null/empty/whitespace)
+                    // 2. Lançar uma exceção (se CPF for obrigatório para atualização, mas nosso DTO permite null)
+                    // 3. Permitir setar como null/vazio (se a regra de negócio mudar)
+                    // Para consistência com as outras entidades (que não limpam campos opcionais se passados como vazios),
+                    // e para evitar que um CPF válido se torne inválido acidentalmente, vamos manter a lógica de não atualizar
+                    // se o valor for inválido, e o DTO deve ser validado antes de chegar aqui.
+                    // Para o caso de inputModel.Cpf ser "", AppService já deve ter validado.
+                    // Se a intenção é que CPF possa ser removido (setado para null), a chamada deveria passar explicitamente null.
+                    // Se o DTO tem Cpf como string? e o frontend pode enviar "" para "remover", então é uma decisão.
+                    // Por enquanto, vamos manter a regra: se não for nulo E não for válido, lança exceção.
                     throw new ArgumentException("CPF não pode ser vazio se fornecido.", nameof(novoCpf));
                 }
                 Cpf = novoCpf;
             }
 
-            if (!string.IsNullOrEmpty(novaSenhaHash))
+
+            // Atualiza SenhaHash apenas se novaSenhaHash não for nula, vazia ou contiver apenas espaços em branco.
+            if (!string.IsNullOrWhiteSpace(novaSenhaHash))
             {
                 SenhaHash = novaSenhaHash;
             }
-            // Não atualize Status ou Role aqui, pois são atualizados por métodos específicos.
+
+            // Atualiza CREF apenas se o novoCref não for nulo, vazio ou conter apenas espaços em branco.
+            if (!string.IsNullOrWhiteSpace(novoCref))
+            {
+                Cref = novoCref;
+            }
+        }
+
+        /// <summary>
+        /// Define o hash da senha do instrutor.
+        /// </summary>
+        /// <param name="novaSenhaHash">O novo hash da senha.</param>
+        public void SetSenhaHash(string novaSenhaHash)
+        {
+            if (string.IsNullOrWhiteSpace(novaSenhaHash))
+            {
+                throw new ArgumentException("Nova senha hash não pode ser vazia.", nameof(novaSenhaHash));
+            }
+            SenhaHash = novaSenhaHash;
         }
 
         /// <summary>

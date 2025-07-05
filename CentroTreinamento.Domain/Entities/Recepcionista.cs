@@ -29,6 +29,7 @@ namespace CentroTreinamento.Domain.Entities
             {
                 throw new ArgumentException("Nome da recepcionista não pode ser vazio.", nameof(nome));
             }
+            // CPF é obrigatório no construtor e não pode ser vazio/whitespace
             if (string.IsNullOrWhiteSpace(cpf))
             {
                 throw new ArgumentException("CPF da recepcionista não pode ser vazio.", nameof(cpf));
@@ -59,25 +60,35 @@ namespace CentroTreinamento.Domain.Entities
 
         /// <summary>
         /// Atualiza dados gerais da recepcionista.
+        /// Campos nulos, vazios ou com apenas espaços em branco para Nome e SenhaHash não serão atualizados.
+        /// CPF não pode ser atualizado para uma string vazia ou com apenas espaços em branco.
         /// </summary>
-        /// <param name="novoNome">Novo nome da recepcionista.</param>
+        /// <param name="novoNome">Novo nome da recepcionista (opcional).</param>
         /// <param name="novoCpf">Novo CPF da recepcionista (opcional).</param>
-        /// <param name="novaSenhaHash">Novo hash da senha (opcional, apenas se a senha for alterada).</param>
-        public void AtualizarDados(string novoNome, string novoCpf, string? novaSenhaHash)
+        /// <param name="novaSenhaHash">Novo hash da senha (opcional).</param>
+        public void AtualizarDados(string? novoNome, string? novoCpf, string? novaSenhaHash)
         {
-            if (string.IsNullOrWhiteSpace(novoNome))
+            // Atualiza Nome se não for nulo, vazio ou whitespace
+            if (!string.IsNullOrWhiteSpace(novoNome))
             {
-                throw new ArgumentException("Nome não pode ser vazio.", nameof(novoNome));
-            }
-            if (string.IsNullOrWhiteSpace(novoCpf))
-            {
-                throw new ArgumentException("CPF não pode ser vazio.", nameof(novoCpf));
+                Nome = novoNome;
             }
 
-            Nome = novoNome;
-            Cpf = novoCpf;
+            // Atualiza CPF:
+            // Se novoCpf for fornecido (não nulo)
+            if (novoCpf != null)
+            {
+                // Se for uma string vazia ou com espaços, ainda lança exceção (CPF é obrigatório)
+                if (string.IsNullOrWhiteSpace(novoCpf))
+                {
+                    throw new ArgumentException("CPF não pode ser vazio se fornecido.", nameof(novoCpf));
+                }
+                Cpf = novoCpf; // Se for válido, atualiza
+            }
+            // Se novoCpf for nulo, o campo CPF é mantido (não faz nada)
 
-            if (!string.IsNullOrEmpty(novaSenhaHash))
+            // Atualiza SenhaHash se não for nulo, vazio ou whitespace
+            if (!string.IsNullOrWhiteSpace(novaSenhaHash))
             {
                 SenhaHash = novaSenhaHash;
             }

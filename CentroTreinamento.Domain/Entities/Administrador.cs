@@ -41,12 +41,22 @@ namespace CentroTreinamento.Domain.Entities
         }
 
         // NOVO MÉTODO para atualizar informações (exceto ID)
-        public void AtualizarDados(string novoNome, string novoCpf, string? novaSenhaHash = null)
+        public void AtualizarDados(string novoNome, string? novoCpf, string? novaSenhaHash = null) // novoCpf deve ser string? também
         {
             // Validações podem ir aqui
+            if (string.IsNullOrWhiteSpace(novoNome)) throw new ArgumentException("Nome não pode ser vazio.", nameof(novoNome));
+
+            // Se o CPF for fornecido (não nulo), valide-o. Se for nulo, mantenha o atual.
+            if (novoCpf != null)
+            {
+                if (string.IsNullOrWhiteSpace(novoCpf)) throw new ArgumentException("CPF não pode ser vazio ou conter apenas espaços em branco.", nameof(novoCpf));
+                Cpf = novoCpf;
+            }
+
             Nome = novoNome;
-            Cpf = novoCpf;
-            if (!string.IsNullOrEmpty(novaSenhaHash))
+
+            // CORREÇÃO AQUI: Use IsNullOrWhiteSpace para SenhaHash
+            if (!string.IsNullOrWhiteSpace(novaSenhaHash))
             {
                 SenhaHash = novaSenhaHash;
             }
