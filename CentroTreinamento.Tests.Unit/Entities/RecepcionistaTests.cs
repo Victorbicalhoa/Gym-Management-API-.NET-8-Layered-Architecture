@@ -28,8 +28,8 @@ namespace CentroTreinamento.Tests.Unit.Domain.Entities
             Assert.Equal(_validNome, recepcionista.Nome);
             Assert.Equal(_validCpf, recepcionista.Cpf);
             Assert.Equal(_validSenhaHash, recepcionista.SenhaHash);
-            Assert.Equal(StatusRecepcionista.Ativo, recepcionista.Status); // Default status
-            Assert.Equal(UserRole.Recepcionista, recepcionista.Role); // Forced role
+            Assert.Equal(_validStatus, recepcionista.Status); // Default status
+            Assert.Equal(_validRole, recepcionista.Role); // Forced role
         }
 
         [Fact]
