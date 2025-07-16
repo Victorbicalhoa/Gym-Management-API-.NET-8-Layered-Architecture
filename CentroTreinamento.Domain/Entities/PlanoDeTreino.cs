@@ -10,6 +10,7 @@ namespace CentroTreinamento.Domain.Entities
         // Propriedades principais
         public Guid Id { get; private set; } // <--- ALTERADO PARA GUID
         public Guid AlunoId { get; private set; } // <--- ID do aluno associado ao plano (chave estrangeira)
+        public Guid InstrutorId { get; private set; } // Se você quiser associar a um instrutor, adicione esta propriedade
         public string? NomePlano { get; private set; } // Ex: "Plano Iniciante", "Hipertrofia Avancada"
         public string? Descricao { get; private set; }
         public DateTime DataInicio { get; private set; }

@@ -3,10 +3,11 @@ namespace CentroTreinamento.Domain.Enums
 {
     public enum StatusAgendamento
     {
-        Confirmado = 1,
-        Pendente = 2,
-        Cancelado = 3,
-        Realizado = 4,
-        Remarcado = 5
+        Aprovado = 1,
+        Recusado = 2,
+        Pendente = 3,
+        Concluido = 4,
+        Cancelado = 5,
+        Remarcado = 6
     }
 }

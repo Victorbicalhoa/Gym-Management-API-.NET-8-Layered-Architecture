@@ -1,3 +1,4 @@
+using AutoMapper; // Para usar JsonStringEnumConverter
 using CentroTreinamento.Application.Interfaces;
 using CentroTreinamento.Application.Interfaces.Services;
 using CentroTreinamento.Application.Services;
@@ -7,6 +8,7 @@ using CentroTreinamento.Infrastructure.Data;
 using CentroTreinamento.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer; 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;               
 using System.Text;
 using System.Text.Json.Serialization;
@@ -15,6 +17,10 @@ using System.Text.Json.Serialization;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+// Configuração do AutoMapper
+builder.Services.AddAutoMapper(cfg => { cfg.AddProfile<CentroTreinamento.Application.Mappers.MappingProfile>(); });
+
 
 // Configuração do DbContext
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -35,6 +41,10 @@ builder.Services.AddScoped<IAdministradorAppService, AdministradorAppService>();
 builder.Services.AddScoped<IAlunoAppService, AlunoAppService>();
 builder.Services.AddScoped<IInstrutorAppService, InstrutorAppService>();
 builder.Services.AddScoped<IRecepcionistaAppService, RecepcionistaAppService>();
+builder.Services.AddScoped<IAgendamentoAppService, AgendamentoAppService>();
+builder.Services.AddScoped<IPagamentoAppService, PagamentoAppService>();
+builder.Services.AddScoped<IPlanoDeTreinoAppService, PlanoDeTreinoAppService>();
+
 
 // Registro do serviço de Hashing de Senhas
 builder.Services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
