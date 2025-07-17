@@ -8,7 +8,7 @@ namespace CentroTreinamento.Application.Interfaces.Services
     public interface IPlanoDeTreinoAppService
     {
         Task<PlanoDeTreinoViewModel> CriarPlanoDeTreinoAsync(PlanoDeTreinoInputModel inputModel);
-        Task<PlanoDeTreinoViewModel> AtualizarPlanoDeTreinoAsync(Guid planoId, PlanoDeTreinoInputModel updateModel);
+        Task<PlanoDeTreinoViewModel> AtualizarPlanoDeTreinoAsync(Guid planoId, PlanoDeTreinoUpdateModel updateModel);
         Task<PlanoDeTreinoViewModel?> GetPlanoDeTreinoByIdAsync(Guid id);
         Task<IEnumerable<PlanoDeTreinoViewModel>> GetPlanosDeTreinoByAlunoIdAsync(Guid alunoId);
         Task<PlanoDeTreinoViewModel?> GetPlanoDeTreinoAtivoByAlunoIdAsync(Guid alunoId);

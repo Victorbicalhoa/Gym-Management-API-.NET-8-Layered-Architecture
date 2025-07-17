@@ -1,30 +1,24 @@
-﻿// CentroTreinamento.Domain\Entities\PlanoDeTreino.cs
-using System;
-using CentroTreinamento.Domain.Enums; // Adicione esta linha para usar o enum StatusPlano
-using System.Collections.Generic; // Se você tiver uma coleção de exercícios ou treinos dentro do plano
+﻿using System;
+using CentroTreinamento.Domain.Enums;
+using System.Collections.Generic;
 
 namespace CentroTreinamento.Domain.Entities
 {
-    public class PlanoDeTreino // Considere herdar de uma BaseEntity com Guid Id
+    public class PlanoDeTreino
     {
-        // Propriedades principais
-        public Guid Id { get; private set; } // <--- ALTERADO PARA GUID
-        public Guid AlunoId { get; private set; } // <--- ID do aluno associado ao plano (chave estrangeira)
-        public Guid InstrutorId { get; private set; } // Se você quiser associar a um instrutor, adicione esta propriedade
-        public string? NomePlano { get; private set; } // Ex: "Plano Iniciante", "Hipertrofia Avancada"
+        public Guid Id { get; private set; }
+        public Guid AlunoId { get; private set; }
+        public Guid InstrutorId { get; private set; } // <<<< AQUI! Adicionada a propriedade
+        public string? NomePlano { get; private set; }
         public string? Descricao { get; private set; }
         public DateTime DataInicio { get; private set; }
         public DateTime DataFim { get; private set; }
-        public StatusPlano Status { get; private set; } // <--- AGORA DO TIPO ENUM!
+        public StatusPlano Status { get; private set; }
 
-        // Se o plano tiver uma coleção de treinos ou exercícios (opcional, dependendo do seu modelo)
-        // public ICollection<ExercicioPlano> Exercicios { get; private set; }
-
-        // Construtor vazio para o ORM (Entity Framework Core)
         public PlanoDeTreino() { }
 
-        // Construtor completo com validações (ajuste conforme suas necessidades)
-        public PlanoDeTreino(Guid id, Guid alunoId, string nomePlano, string descricao, DateTime dataInicio, DateTime dataFim, StatusPlano status)
+        // CONSTRUTOR ATUALIZADO PARA INCLUIR instrutorId (8 ARGUMENTOS AGORA)
+        public PlanoDeTreino(Guid id, Guid alunoId, Guid instrutorId, string nomePlano, string descricao, DateTime dataInicio, DateTime dataFim, StatusPlano status)
         {
             if (id == Guid.Empty)
             {
@@ -33,6 +27,10 @@ namespace CentroTreinamento.Domain.Entities
             if (alunoId == Guid.Empty)
             {
                 throw new ArgumentException("ID do aluno associado ao plano não pode ser vazio.", nameof(alunoId));
+            }
+            if (instrutorId == Guid.Empty) // <<<< NOVA VALIDAÇÃO
+            {
+                throw new ArgumentException("ID do instrutor associado ao plano não pode ser vazio.", nameof(instrutorId));
             }
             if (string.IsNullOrWhiteSpace(nomePlano))
             {
@@ -46,18 +44,15 @@ namespace CentroTreinamento.Domain.Entities
             {
                 throw new ArgumentException("Data de fim do plano é inválida ou anterior à data de início.", nameof(dataFim));
             }
-            // A validação do enum é implícita pelo tipo.
 
             Id = id;
             AlunoId = alunoId;
+            InstrutorId = instrutorId; // <<<< ATRIBUÍDO AQUI
             NomePlano = nomePlano;
             Descricao = descricao;
             DataInicio = dataInicio;
             DataFim = dataFim;
             Status = status;
-
-            // Inicialize coleções se existirem
-            // Exercicios = new List<ExercicioPlano>();
         }
 
         // Métodos de domínio (comportamentos)
@@ -87,7 +82,7 @@ namespace CentroTreinamento.Domain.Entities
 
         public override string ToString()
         {
-            return $"PlanoDeTreino{{ Id={Id}, AlunoId={AlunoId}, Nome='{NomePlano}', Status='{Status}', Inicio={DataInicio.ToShortDateString()}, Fim={DataFim.ToShortDateString()} }}";
+            return $"PlanoDeTreino{{ Id={Id}, AlunoId={AlunoId}, InstrutorId={InstrutorId}, Nome='{NomePlano}', Status='{Status}', Inicio={DataInicio.ToShortDateString()}, Fim={DataFim.ToShortDateString()} }}";
         }
     }
 }

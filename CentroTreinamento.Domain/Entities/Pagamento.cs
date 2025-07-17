@@ -6,18 +6,20 @@ namespace CentroTreinamento.Domain.Entities
     public class Pagamento // Considere herdar de uma BaseEntity com Guid Id
     {
         // Propriedades com get privados para controle
-        public Guid Id { get; private set; } // <--- ALTERADO PARA GUID
-        public Guid AlunoId { get; private set; } // <--- Adicionada a propriedade AlunoId (chave estrangeira)
+        public Guid Id { get; private set; }
+        public Guid AlunoId { get; private set; }
         public decimal Valor { get; private set; }
         public DateTime DataPagamento { get; private set; }
-        public StatusPagamento StatusPagamento { get; private set; } // <--- AGORA DO TIPO ENUM!
-        // Adicione outras propriedades relevantes para Pagamento, se houver (ex: Descricao, MetodoPagamento, etc.)
+        public string? MetodoPagamento { get; private set; } // <<<< ADICIONADO
+        public string? Observacoes { get; private set; }     // <<<< ADICIONADO
+        public StatusPagamento StatusPagamento { get; private set; }
 
         // Construtor vazio para o ORM (Entity Framework Core)
         public Pagamento() { }
 
         // Construtor completo com validações (ajuste conforme suas necessidades)
-        public Pagamento(Guid id, Guid alunoId, decimal valor, DateTime dataPagamento, StatusPagamento statusPagamento)
+        // <<<< ATUALIZADO PARA INCLUIR MetodoPagamento e Observacoes
+        public Pagamento(Guid id, Guid alunoId, decimal valor, DateTime dataPagamento, string? metodoPagamento, string? observacoes, StatusPagamento statusPagamento)
         {
             if (id == Guid.Empty)
             {
@@ -35,12 +37,13 @@ namespace CentroTreinamento.Domain.Entities
             {
                 throw new ArgumentException("Data do pagamento não pode ser vazia.", nameof(dataPagamento));
             }
-            // A validação do enum é implícita pelo tipo.
 
             Id = id;
             AlunoId = alunoId;
             Valor = valor;
             DataPagamento = dataPagamento;
+            MetodoPagamento = metodoPagamento; // <<<< ATRIBUÍDO
+            Observacoes = observacoes;         // <<<< ATRIBUÍDO
             StatusPagamento = statusPagamento;
         }
 
@@ -50,9 +53,9 @@ namespace CentroTreinamento.Domain.Entities
             if (StatusPagamento == StatusPagamento.Pendente || StatusPagamento == StatusPagamento.Atrasado)
             {
                 StatusPagamento = StatusPagamento.Pago;
-                // Lógica adicional, como registrar data de pagamento efetivo, enviar notificação, etc.
             }
             // Considere lançar uma exceção ou retornar um erro se o status já for 'Pago' ou 'Cancelado'
+            // if (StatusPagamento == StatusPagamento.Pago) throw new InvalidOperationException("Pagamento já está pago.");
         }
 
         public void MarcarComoCancelado()
@@ -60,14 +63,12 @@ namespace CentroTreinamento.Domain.Entities
             if (StatusPagamento != StatusPagamento.Pago) // Só pode cancelar se não estiver pago
             {
                 StatusPagamento = StatusPagamento.Cancelado;
-                // Lógica adicional para cancelamento
             }
         }
-        // Você pode adicionar outros métodos como 'RegistrarAtraso', etc.
 
         public override string ToString()
         {
-            return $"Pagamento{{ Id={Id}, AlunoId={AlunoId}, Valor={Valor}, DataPagamento={DataPagamento}, Status={StatusPagamento} }}";
+            return $"Pagamento{{ Id={Id}, AlunoId={AlunoId}, Valor={Valor}, DataPagamento={DataPagamento}, Metodo={MetodoPagamento}, Status={StatusPagamento} }}";
         }
     }
 }

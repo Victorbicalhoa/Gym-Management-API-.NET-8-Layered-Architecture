@@ -63,7 +63,7 @@ namespace CentroTreinamento.Application.Services
             return viewModel;
         }
 
-        public async Task<PlanoDeTreinoViewModel> AtualizarPlanoDeTreinoAsync(Guid planoId, PlanoDeTreinoInputModel updateModel)
+        public async Task<PlanoDeTreinoViewModel> AtualizarPlanoDeTreinoAsync(Guid planoId, PlanoDeTreinoUpdateModel updateModel)
         {
             var planoExistente = await _planoDeTreinoRepository.GetByIdAsync(planoId);
             if (planoExistente == null)
@@ -92,7 +92,7 @@ namespace CentroTreinamento.Application.Services
             planoExistente.AtualizarPeriodo(updateModel.DataFim); // Supondo que você queira atualizar apenas a data de fim
 
             // Se você quiser atualizar o status, sua entidade tem um método para isso:
-            planoExistente.AtualizarStatus(updateModel.Status);
+            planoExistente.AtualizarStatus(updateModel.StatusPlano);
 
             // Se você não tiver métodos para cada atualização, pode ser assim (mas é menos DDD):
             // _mapper.Map(updateModel, planoExistente); // Mapeia as propriedades do DTO para a entidade existente

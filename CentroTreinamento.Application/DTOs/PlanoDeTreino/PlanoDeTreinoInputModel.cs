@@ -26,6 +26,6 @@ namespace CentroTreinamento.Application.DTOs.PlanoDeTreino
         public DateTime DataFim { get; set; }
 
         [Required(ErrorMessage = "O status inicial do plano é obrigatório.")]
-        public StatusPlano Status { get; set; } // Para definir o status inicial
+        public StatusPlano StatusPlano { get; set; } // Para definir o status inicial
     }
 }
