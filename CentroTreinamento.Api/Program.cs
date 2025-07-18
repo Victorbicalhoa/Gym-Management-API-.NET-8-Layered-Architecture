@@ -22,6 +22,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddAutoMapper(cfg => { cfg.AddProfile<CentroTreinamento.Application.Mappers.MappingProfile>(); });
 
 
+
 // Configuração do DbContext
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
