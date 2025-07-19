@@ -10,7 +10,7 @@ namespace CentroTreinamento.Domain.Entities
         public Guid AlunoId { get; private set; }
         public decimal Valor { get; private set; }
         public DateTime DataPagamento { get; private set; }
-        public string? MetodoPagamento { get; private set; } // <<<< ADICIONADO
+        public MetodoPagamento MetodoPagamento { get; private set; } // <<<< ADICIONADO
         public string? Observacoes { get; private set; }     // <<<< ADICIONADO
         public StatusPagamento StatusPagamento { get; private set; }
 
@@ -19,7 +19,7 @@ namespace CentroTreinamento.Domain.Entities
 
         // Construtor completo com validações (ajuste conforme suas necessidades)
         // <<<< ATUALIZADO PARA INCLUIR MetodoPagamento e Observacoes
-        public Pagamento(Guid id, Guid alunoId, decimal valor, DateTime dataPagamento, string? metodoPagamento, string? observacoes, StatusPagamento statusPagamento)
+        public Pagamento(Guid id, Guid alunoId, decimal valor, DateTime dataPagamento, MetodoPagamento metodoPagamento, string? observacoes, StatusPagamento statusPagamento)
         {
             if (id == Guid.Empty)
             {

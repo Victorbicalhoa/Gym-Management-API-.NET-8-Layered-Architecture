@@ -41,7 +41,8 @@ namespace CentroTreinamento.Tests.Unit.Application.Services
             var alunoId = Guid.NewGuid();
             var valor = 150.0m;
             var dataPagamento = DateTime.UtcNow;
-            var metodoPagamento = "Cartão de Crédito";
+            // CORREÇÃO: Usar o enum MetodoPagamento
+            var metodoPagamento = MetodoPagamento.CartaoCredito;
             var observacoes = "Mensalidade de exemplo";
 
             var inputModel = new PagamentoInputModel
@@ -64,6 +65,7 @@ namespace CentroTreinamento.Tests.Unit.Application.Services
                 role: UserRole.Aluno
             );
 
+            // CORREÇÃO: Usar o enum MetodoPagamento no construtor da entidade
             var pagamentoEntityMock = new Pagamento(Guid.NewGuid(), alunoId, valor, dataPagamento, metodoPagamento, observacoes, StatusPagamento.Pago);
 
             var pagamentoViewModelMock = new PagamentoViewModel
@@ -73,6 +75,7 @@ namespace CentroTreinamento.Tests.Unit.Application.Services
                 NomeAluno = alunoMock.Nome,
                 Valor = valor,
                 DataPagamento = dataPagamento,
+                // CORREÇÃO: Usar o enum MetodoPagamento
                 MetodoPagamento = metodoPagamento,
                 Observacoes = observacoes,
                 StatusPagamento = StatusPagamento.Pago
@@ -115,7 +118,8 @@ namespace CentroTreinamento.Tests.Unit.Application.Services
                 AlunoId = alunoId,
                 Valor = 100.0m,
                 DataPagamento = DateTime.UtcNow,
-                MetodoPagamento = "Dinheiro",
+                // CORREÇÃO: Usar o enum MetodoPagamento
+                MetodoPagamento = MetodoPagamento.Dinheiro,
                 Observacoes = "Teste"
             };
 
@@ -142,10 +146,12 @@ namespace CentroTreinamento.Tests.Unit.Application.Services
             var alunoId = Guid.NewGuid();
             var valor = 100m;
             var dataPagamento = DateTime.UtcNow;
-            var metodoPagamento = "Pix";
+            // CORREÇÃO: Usar o enum MetodoPagamento
+            var metodoPagamento = MetodoPagamento.Pix;
             var observacoes = "Observações";
             var statusPagamento = StatusPagamento.Pago;
 
+            // CORREÇÃO: Usar o enum MetodoPagamento no construtor da entidade
             var pagamentoEntityMock = new Pagamento(pagamentoId, alunoId, valor, dataPagamento, metodoPagamento, observacoes, statusPagamento);
             var alunoMock = new Aluno(
                 id: alunoId,
@@ -165,6 +171,7 @@ namespace CentroTreinamento.Tests.Unit.Application.Services
                 NomeAluno = alunoMock.Nome,
                 Valor = valor,
                 DataPagamento = dataPagamento,
+                // CORREÇÃO: Usar o enum MetodoPagamento
                 MetodoPagamento = metodoPagamento,
                 Observacoes = observacoes,
                 StatusPagamento = statusPagamento
@@ -226,19 +233,22 @@ namespace CentroTreinamento.Tests.Unit.Application.Services
 
             var pagamentosEntityList = new List<Pagamento>
             {
-                new Pagamento(Guid.NewGuid(), alunoId, 100m, DateTime.UtcNow.AddDays(-10), "Dinheiro", "Mensalidade Jan", StatusPagamento.Pago),
-                new Pagamento(Guid.NewGuid(), alunoId, 50m, DateTime.UtcNow.AddDays(-5), "Pix", "Multa Atraso", StatusPagamento.Pendente)
+                // CORREÇÃO: Usar o enum MetodoPagamento nos construtores
+                new Pagamento(Guid.NewGuid(), alunoId, 100m, DateTime.UtcNow.AddDays(-10), MetodoPagamento.Dinheiro, "Mensalidade Jan", StatusPagamento.Pago),
+                new Pagamento(Guid.NewGuid(), alunoId, 50m, DateTime.UtcNow.AddDays(-5), MetodoPagamento.Pix, "Multa Atraso", StatusPagamento.Pendente)
             };
 
             var pagamentosViewModelList = new List<PagamentoViewModel>
             {
-                new PagamentoViewModel { Id = pagamentosEntityList[0].Id, AlunoId = alunoId, NomeAluno = alunoMock.Nome, Valor = 100m, DataPagamento = pagamentosEntityList[0].DataPagamento, MetodoPagamento = "Dinheiro", Observacoes = "Mensalidade Jan", StatusPagamento = StatusPagamento.Pago },
-                new PagamentoViewModel { Id = pagamentosEntityList[1].Id, AlunoId = alunoId, NomeAluno = alunoMock.Nome, Valor = 50m, DataPagamento = pagamentosEntityList[1].DataPagamento, MetodoPagamento = "Pix", Observacoes = "Multa Atraso", StatusPagamento = StatusPagamento.Pendente }
+                // CORREÇÃO: Usar o enum MetodoPagamento
+                new PagamentoViewModel { Id = pagamentosEntityList[0].Id, AlunoId = alunoId, NomeAluno = alunoMock.Nome, Valor = 100m, DataPagamento = pagamentosEntityList[0].DataPagamento, MetodoPagamento = MetodoPagamento.Dinheiro, Observacoes = "Mensalidade Jan", StatusPagamento = StatusPagamento.Pago },
+                new PagamentoViewModel { Id = pagamentosEntityList[1].Id, AlunoId = alunoId, NomeAluno = alunoMock.Nome, Valor = 50m, DataPagamento = pagamentosEntityList[1].DataPagamento, MetodoPagamento = MetodoPagamento.Pix, Observacoes = "Multa Atraso", StatusPagamento = StatusPagamento.Pendente }
             };
 
             _mockPagamentoRepository.Setup(r => r.FindAsync(p => p.AlunoId == alunoId)).ReturnsAsync(pagamentosEntityList);
             _mockAlunoRepository.Setup(r => r.GetByIdAsync(alunoId)).ReturnsAsync(alunoMock);
 
+            // Mockar o mapeamento para cada entidade na lista
             _mockMapper.Setup(m => m.Map<PagamentoViewModel>(pagamentosEntityList[0])).Returns(pagamentosViewModelList[0]);
             _mockMapper.Setup(m => m.Map<PagamentoViewModel>(pagamentosEntityList[1])).Returns(pagamentosViewModelList[1]);
 
@@ -279,7 +289,6 @@ namespace CentroTreinamento.Tests.Unit.Application.Services
 
             // O ALUNO PODE EXISTIR OU NÃO, mas o AppService NÃO TENTA BUSCÁ-LO SE NÃO HÁ PAGAMENTOS.
             // Não há necessidade de configurar o mock de aluno se ele nunca será chamado neste cenário.
-            // Removemos o setup de aluno aqui, ou podemos deixar, mas o Verify deve ser Times.Never.
             // _mockAlunoRepository.Setup(r => r.GetByIdAsync(alunoId)).ReturnsAsync(alunoMock); // Podemos remover este setup para ser mais preciso
 
             // Act

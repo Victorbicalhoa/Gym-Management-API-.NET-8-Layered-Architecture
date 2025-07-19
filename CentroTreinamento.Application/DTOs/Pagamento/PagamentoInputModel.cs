@@ -19,7 +19,7 @@ namespace CentroTreinamento.Application.DTOs.Pagamento
         // Supondo que você adicionará essas propriedades na entidade Pagamento
         [Required(ErrorMessage = "O método de pagamento é obrigatório.")]
         [StringLength(100, ErrorMessage = "O método de pagamento não pode exceder 100 caracteres.")]
-        public string? MetodoPagamento { get; set; }
+        public MetodoPagamento MetodoPagamento { get; set; }
 
         [StringLength(500, ErrorMessage = "As observações não podem exceder 500 caracteres.")]
         public string? Observacoes { get; set; }

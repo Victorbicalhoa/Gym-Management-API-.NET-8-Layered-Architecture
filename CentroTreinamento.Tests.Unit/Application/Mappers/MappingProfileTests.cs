@@ -139,7 +139,8 @@ namespace CentroTreinamento.Tests.Unit.Application.Mappers
                 AlunoId = Guid.NewGuid(),
                 Valor = 150.00m,
                 DataPagamento = DateTime.Now.Date,
-                MetodoPagamento = "Cartão de Crédito",
+                // CORRIGIDO: Usar o valor enum MetodoPagamento.CartaoCredito
+                MetodoPagamento = MetodoPagamento.CartaoCredito,
                 Observacoes = "Mensalidade do mês corrente",
                 StatusPagamento = StatusPagamento.Pago
             };
@@ -151,7 +152,8 @@ namespace CentroTreinamento.Tests.Unit.Application.Mappers
             Assert.Equal(inputModel.AlunoId, entity.AlunoId);
             Assert.Equal(inputModel.Valor, entity.Valor);
             Assert.Equal(inputModel.DataPagamento, entity.DataPagamento);
-            Assert.Equal(inputModel.MetodoPagamento, entity.MetodoPagamento);
+            // CORRIGIDO: Comparar com o valor enum MetodoPagamento.CartaoCredito
+            Assert.Equal(MetodoPagamento.CartaoCredito, entity.MetodoPagamento);
             Assert.Equal(inputModel.Observacoes, entity.Observacoes);
             Assert.Equal(inputModel.StatusPagamento, entity.StatusPagamento);
         }
@@ -164,7 +166,8 @@ namespace CentroTreinamento.Tests.Unit.Application.Mappers
                 Guid.NewGuid(),
                 200.50m,
                 DateTime.Now.AddDays(-5),
-                "Pix",
+                // CORRIGIDO: Usar o valor enum MetodoPagamento.Pix
+                MetodoPagamento.Pix,
                 "Pagamento de aula avulsa",
                 StatusPagamento.Pendente
             );
@@ -176,7 +179,8 @@ namespace CentroTreinamento.Tests.Unit.Application.Mappers
             Assert.Equal(entity.AlunoId, viewModel.AlunoId);
             Assert.Equal(entity.Valor, viewModel.Valor);
             Assert.Equal(entity.DataPagamento, viewModel.DataPagamento);
-            Assert.Equal(entity.MetodoPagamento, viewModel.MetodoPagamento);
+            // CORRIGIDO: Comparar com o valor enum MetodoPagamento.Pix
+            Assert.Equal(MetodoPagamento.Pix, viewModel.MetodoPagamento);
             Assert.Equal(entity.Observacoes, viewModel.Observacoes);
             Assert.Equal(entity.StatusPagamento, viewModel.StatusPagamento);
             Assert.Null(viewModel.NomeAluno); // Ignorado

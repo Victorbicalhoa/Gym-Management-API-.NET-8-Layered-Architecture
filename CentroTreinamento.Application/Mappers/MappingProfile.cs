@@ -40,13 +40,17 @@ namespace CentroTreinamento.Application.Mappers
                 .ForMember(dest => dest.NomeInstrutor, opt => opt.Ignore());
 
             // --- Mapeamentos para Pagamento ---
+            // Revertendo para o mapeamento direto, assumindo que as propriedades nos DTOs de input
+            // (PagamentoInputModel) já são do tipo enum (MetodoPagamento, StatusPagamento).
             CreateMap<PagamentoInputModel, Pagamento>()
                 .ForCtorParam("id", opt => opt.MapFrom(src => Guid.NewGuid()))
                 .ForCtorParam("alunoId", opt => opt.MapFrom(src => src.AlunoId))
                 .ForCtorParam("valor", opt => opt.MapFrom(src => src.Valor))
                 .ForCtorParam("dataPagamento", opt => opt.MapFrom(src => src.DataPagamento))
+                // Se src.MetodoPagamento já é do tipo MetodoPagamento (enum), isso deve funcionar.
                 .ForCtorParam("metodoPagamento", opt => opt.MapFrom(src => src.MetodoPagamento))
                 .ForCtorParam("observacoes", opt => opt.MapFrom(src => src.Observacoes))
+                // Se src.StatusPagamento já é do tipo StatusPagamento (enum), isso deve funcionar.
                 .ForCtorParam("statusPagamento", opt => opt.MapFrom(src => src.StatusPagamento));
 
             CreateMap<Pagamento, PagamentoViewModel>()
@@ -83,14 +87,11 @@ namespace CentroTreinamento.Application.Mappers
                 .ConstructUsing(src => new Administrador(
                     Guid.NewGuid(),
                     src.Nome!,
-                    // Passamos um valor para o construtor, para que ele seja instanciado com sucesso.
-                    // O valor real do SenhaHash virá do AppService.
                     "placeholderHashForValidation",
                     StatusAdministrador.Ativo, // Valor padrão
                     UserRole.Administrador,    // Valor padrão
                     src.Cpf
                 ))
-                // IGNORAR PROPRIEDADES QUE JÁ SÃO SETADAS PELO CONSTRUTOR OU NÃO VÊM DO INPUTMODEL
                 .ForMember(dest => dest.Id, opt => opt.Ignore())
                 .ForMember(dest => dest.SenhaHash, opt => opt.Ignore())
                 .ForMember(dest => dest.Status, opt => opt.Ignore())
@@ -145,8 +146,8 @@ namespace CentroTreinamento.Application.Mappers
                 ))
                 .ForMember(dest => dest.Id, opt => opt.Ignore())
                 .ForMember(dest => dest.SenhaHash, opt => opt.Ignore())
-                .ForMember(dest => dest.Status, opt => opt.Ignore()) // Ignorar Status da entidade
-                .ForMember(dest => dest.Role, opt => opt.Ignore());   // Ignorar Role da entidade
+                .ForMember(dest => dest.Status, opt => opt.Ignore())
+                .ForMember(dest => dest.Role, opt => opt.Ignore());
 
             CreateMap<Recepcionista, RecepcionistaViewModel>();
         }
