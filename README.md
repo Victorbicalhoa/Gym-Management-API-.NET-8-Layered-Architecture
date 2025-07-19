@@ -8,7 +8,7 @@ Um sistema abrangente para gerenciar academias, incluindo funcionalidades para m
 
 Este projeto consiste em uma API RESTful desenvolvida em ASP.NET Core para gerenciar as operações de um centro de treinamento. Ele segue uma **arquitetura em camadas** (Domain, Infrastructure, Application, API) para promover a separação de responsabilidades, manutenibilidade e escalabilidade.
 
-Até o momento, o sistema possui **gerenciamento completo de usuários** para as quatro entidades principais: **Administradores, Alunos, Instrutores e Recepcionistas**, incluindo **autenticação e autorização robustas via JWT**.
+Até o momento, o sistema possui **gerenciamento completo de usuários** para as quatro entidades principais: **Administradores, Alunos, Instrutores e Recepcionistas**, incluindo **autenticação e autorização robustas via JWT**. Além disso, o **gerenciamento de agendamentos**, **planos de treino** e **pagamentos** já estão implementados, com suas respectivas regras de negócio e cobertos por testes unitários abrangentes.
 
 ---
 
@@ -22,6 +22,8 @@ Até o momento, o sistema possui **gerenciamento completo de usuários** para as
 * **Autenticação/Autorização:** JWT (JSON Web Tokens)
 * **Hashing de Senhas:** BCrypt.NET (ou similar via `IPasswordHasher`)
 * **Documentação da API:** Swagger/Swashbuckle.AspNetCore 9.0.1
+* **Mapeamento de Objetos:** AutoMapper
+* **Testes Unitários:** XUnit, Moq
 * **Controle de Versão:** Git / GitHub
 
 ---
@@ -71,7 +73,7 @@ Até o momento, o sistema possui **gerenciamento completo de usuários** para as
             "Secret": "SUA_CHAVE_SECRETA_MUITO_LONGA_E_SEGURA_AQUI_PELO_MENOS_32_CARACTERES", // Altere isso!
             "Issuer": "GymManagementSystem",
             "Audience": "GymClients",
-            ""ExpirationInMinutes": 60
+            "ExpirationInMinutes": 60
           },
           // ... outras configurações
         }
@@ -87,7 +89,7 @@ Até o momento, o sistema possui **gerenciamento completo de usuários** para as
         Update-Database
         ```
         *Se esta for a primeira vez e você ainda não tiver migrações criadas, pode ser necessário gerar uma inicial primeiro (ex: `Add-Migration InitialCreate`):*
-        ```powershell
+        ```powersershell
         Add-Migration NomeDaSuaPrimeiraMigracao
         Update-Database
         ```
@@ -105,7 +107,7 @@ Até o momento, o sistema possui **gerenciamento completo de usuários** para as
 
 ## Endpoints Disponíveis
 
-Atualmente, a API oferece gerenciamento completo (CRUD) e autenticação para as seguintes entidades de usuário:
+Atualmente, a API oferece gerenciamento completo (CRUD) e autenticação para as seguintes entidades:
 
 * **Administradores:**
     * `GET /api/administradores`
@@ -143,6 +145,31 @@ Atualmente, a API oferece gerenciamento completo (CRUD) e autenticação para as
     * `DELETE /api/recepcionistas/{id}`
     * `POST /api/Auth/login/recepcionista` (Autenticação)
 
+* **Agendamentos:**
+    * `GET /api/agendamentos`
+    * `GET /api/agendamentos/{id}`
+    * `GET /api/agendamentos/aluno/{alunoId}`
+    * `GET /api/agendamentos/instrutor/{instrutorId}`
+    * `POST /api/agendamentos`
+    * `PUT /api/agendamentos/{id}`
+    * `PATCH /api/agendamentos/{id}/status`
+    * `DELETE /api/agendamentos/{id}`
+
+* **Planos de Treino:**
+    * `GET /api/planosdetreino`
+    * `GET /api/planosdetreino/{id}`
+    * `POST /api/planosdetreino`
+    * `PUT /api/planosdetreino/{id}`
+    * `DELETE /api/planosdetreino/{id}`
+
+* **Pagamentos:**
+    * `GET /api/pagamentos`
+    * `GET /api/pagamentos/{id}`
+    * `POST /api/pagamentos`
+    * `PUT /api/pagamentos/{id}`
+    * `PATCH /api/pagamentos/{id}/status` (para atualizar status como pago/pendente)
+    * `DELETE /api/pagamentos/{id}`
+
 **Autenticação:** Para acessar a maioria dos endpoints de gerenciamento, é necessário obter um JWT válido através dos endpoints de login e incluí-lo no cabeçalho `Authorization` como `Bearer Token`.
 
 ---
@@ -151,10 +178,10 @@ Atualmente, a API oferece gerenciamento completo (CRUD) e autenticação para as
 
 O projeto está em constante evolução. As próximas etapas importantes incluem:
 
-* **Testes Unitários:** Adicionar testes unitários abrangentes para as camadas `Domain` e `Application` a fim de garantir a qualidade e a confiabilidade do código.
-* **Validações de Negócio Avançadas:** Incorporar validações mais complexas e regras de negócio específicas em nível de domínio, para além das validações de DTO.
-* **Desenvolvimento de Outras Entidades:** Implementar funcionalidades CRUD completas para entidades como **Agendamentos, Planos de Treino, Pagamentos**, etc., seguindo o mesmo padrão arquitetural.
+* **Validações de Negócio Avançadas:** Continuar a incorporar validações mais complexas e regras de negócio específicas em nível de domínio, para além das validações de DTO.
 * **Políticas de Autorização Detalhadas:** Refinar as políticas de autorização (`[Authorize(Roles = "...")`) em todos os endpoints para um controle de acesso granular baseado nas regras de negócio de cada papel.
+* **Integração com Gateway de Pagamento:** Explorar a integração com gateways de pagamento externos para simular transações reais.
+* **Funcionalidades de Relatórios:** Adicionar endpoints para geração de relatórios e análises de dados.
 
 ---
 
